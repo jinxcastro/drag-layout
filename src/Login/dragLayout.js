@@ -1,10 +1,10 @@
 import React, { useState, useRef } from 'react'
 import Draggable from 'react-draggable';
 import {createRoot} from 'react-dom/client';
-import './loginPage.css';
+import './dragLayout.css';
 import { generateThumbnail } from './generateThumbnail';
 
-const LoginPage = () => {
+const DragLayout = () => {
   const [draggedVideoSize, setdraggedVideoSize] = useState(null);
   const [currentVideo, setCurrentVideo] = useState(null);
   const [videos, setVideos] = useState([]);
@@ -211,4 +211,4 @@ const LoginPage = () => {
   )
 }
 
-export default LoginPage;
+export default DragLayout;

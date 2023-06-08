@@ -13,9 +13,7 @@ import EditAccount from "./components/product/edit.component";
 import AccountList from "./components/product/list.component";
 import CreateAccount from "./components/product/create.component";
 import Deposit from "./components/product/deposit.component";
-import LoginPage from "./Login/loginPage";
-import RegistrationForm from "./Login/RegistrationForm";
-import LoginForm from "./Login/LoginForm";
+import DragLayout from "./Login/dragLayout";
 
 function App() {
   return (
@@ -54,10 +52,7 @@ function MainPage() {
               <Route path="/product/edit/:id" element={<EditAccount />} />
               <Route path="/product/deposit/:id" element={<Deposit />} />
               <Route path="/product/list/:id" element={<AccountList />} />
-              <Route exact path='/' element={<LoginPage />} />
-
-              <Route path="/RegistrationForm" element={<RegistrationForm />} />
-              <Route path="/LoginForm" element={<LoginForm />} />
+              <Route exact path='/' element={<DragLayout />} />
             </Routes>
           </Col>
         </Row>
