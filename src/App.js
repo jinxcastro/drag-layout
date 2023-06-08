@@ -1,24 +1,68 @@
-import logo from './logo.svg';
-import './App.css';
+import * as React from "react";
+import Navbar from "react-bootstrap/Navbar";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import "bootstrap/dist/css/bootstrap.css";
+import { FaArrowRight } from 'react-icons/fa';
+import './App.css'
+
+import { BrowserRouter as Router , Routes, Route, Link, useLocation } from "react-router-dom";
+
+import EditAccount from "./components/product/edit.component";
+import AccountList from "./components/product/list.component";
+import CreateAccount from "./components/product/create.component";
+import Deposit from "./components/product/deposit.component";
+import LoginPage from "./Login/loginPage";
+import RegistrationForm from "./Login/RegistrationForm";
+import LoginForm from "./Login/LoginForm";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <MainPage />
+    </Router>
+  );
+}
+
+function MainPage() {
+  const location = useLocation();
+  // const showNavbar = location.pathname !== "/";
+
+  return (
+    <>
+      {/* {showNavbar && (  */}
+        <Navbar className="navbar-header">
+          <Container>
+            <Link to={"/product/list/:id"} className="navbar-brand text-white">
+              <strong>Drag Layout</strong>
+            </Link>
+            {/* <div className="ml-auto">
+              <Link to={"/"} className="btn navbar-header">
+                Welcome Banker <FaArrowRight />
+              </Link>
+            </div> */}
+          </Container>
+        </Navbar>
+      {/* )} */}
+
+      <Container className="mt-5">
+        <Row>
+          <Col md={12}>
+            <Routes>
+              <Route path="/product/create" element={<CreateAccount />} />
+              <Route path="/product/edit/:id" element={<EditAccount />} />
+              <Route path="/product/deposit/:id" element={<Deposit />} />
+              <Route path="/product/list/:id" element={<AccountList />} />
+              <Route exact path='/' element={<LoginPage />} />
+
+              <Route path="/RegistrationForm" element={<RegistrationForm />} />
+              <Route path="/LoginForm" element={<LoginForm />} />
+            </Routes>
+          </Col>
+        </Row>
+      </Container>
+    </>
   );
 }
 

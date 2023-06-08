@@ -1,0 +1,84 @@
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+  
+  .logo-image {
+    margin-bottom: 20px;
+  }
+  
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+.login-btn {
+    margin-top: 10px;
+    width: 423px;
+    height: 45px;
+    left: 509px;
+    top: 769px;
+    z-index: 8;
+    color: rgb(255, 255, 255);
+    background-color: rgb(198, 127, 51);
+    border-radius: 4px;
+    font-size: 20px;
+    border-width: 1px;
+    border-style: solid;
+    text-align: center;
+    font-weight: bold;
+    font-style: normal;
+    opacity: 1;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.screen-size-player {
+  position: relative;
+  height: 450px;
+  width: 100%;
+  border: 1px dashed black;
+  margin-top: 10px;
+  margin-bottom: 10px,;
+  overflow: auto;
+}
+
+.img-thumbnail {
+  width: 100px;
+  height: 100px;
+  cursor: grab;
+  margin: 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.drop-body {
+  position: relative;
+  height: 460px;
+  border: 1px solid black;
+  margin-bottom: 10px;
+}
+
+.panel-style {
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 300px;
+  background: lightgray;
+}
+
+

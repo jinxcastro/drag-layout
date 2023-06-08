@@ -1,0 +1,33 @@
+.btn-add-acc{
+    background-color: #e28743;
+}
+
+.btn-cancel{
+    background-color: #c2bcbc;
+}
+
+.deposit-button {
+    background-color: #4CAF50;
+    color: white; 
+
+  }
+  
+  .edit-button {
+    background-color: #008CBA; 
+    color: white; 
+  }
+  
+  .delete-button {
+    background-color: #f44336; 
+    color: white; 
+  }
+  
+  .disable-button {
+    background-color: #555555; 
+    color: white; 
+  }
+  
+  .search-btn-row {
+    padding: 20px;
+  }
+  
