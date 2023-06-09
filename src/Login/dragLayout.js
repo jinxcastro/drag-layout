@@ -9,26 +9,22 @@ const DragLayout = () => {
   const [currentVideo, setCurrentVideo] = useState(null);
   const [videos, setVideos] = useState([]);
   const [thumbnails, setThumbnails] = useState([]);
-  const videoRef = useRef(null);
   const [showPanel, setShowPanel] = useState(false);
+  const videoRef = useRef(null);
+  const [flipped, setFlipped] = useState(false); 
 
+  const flipVideo = () => {
+    if (videoRef.current) {
+      videoRef.current.style.transform = flipped ? 'none' : 'rotate(180deg)';
+      setFlipped(!flipped);
+    }
+  };
+  
   const handleVideoClick = () => {
     setShowPanel(true);
     setShowPanel(!showPanel);
   };
 
-  const handleFileSelect = (event) => {
-    const selectedFiles = event.target.files;
-    const selectedVideos = Array.from(selectedFiles);
-    setVideos((prevVideos) => [...prevVideos, ...selectedVideos]);
-    setCurrentVideo(selectedVideos[0]);
-
-    const thumbnailPromises = selectedVideos.map((video) => generateThumbnail(video));
-    Promise.all(thumbnailPromises).then((thumbnails) => {
-      setThumbnails((prevThumbnails) => [...prevThumbnails, ...thumbnails]);
-    });
-  };
-  
   const handleDragStart = (size, video) => {
     setdraggedVideoSize(size);
     setCurrentVideo(video);
@@ -48,37 +44,20 @@ const DragLayout = () => {
     setShowPanel(!showPanel);
   };
 
-  const handleDrop = (e) => {
-    e.preventDefault();
-    const modalBody = document.getElementById('drop-body');
-  
-    const offsetX = e.clientX - modalBody.getBoundingClientRect().left;
-    const offsetY = e.clientY - modalBody.getBoundingClientRect().top;
-  
-    let width, height;
-      if (draggedVideoSize === 'small') {
-        width = 100;
-        height = 200;     
-      } else if (draggedVideoSize === 'medium') {
-        width = 200;
-        height = 300; 
-      } else if (draggedVideoSize === 'large') {
-        width = 300;
-        height = 400;
-      } else {
-        return; 
-      }
-      setCurrentVideo((prevVideo) => ({
-        ...prevVideo,
-        width,
-        height,
-      }));
-  
-    const boxLeft = offsetX - width / 2;
-    const boxTop = offsetY - height / 2;
-  
-    const VideoPlayer = () => (
-      <Draggable bounds= '#drop-body'>
+  const handleFileSelect = (event) => {
+    const selectedFiles = event.target.files;
+    const selectedVideos = Array.from(selectedFiles);
+    setVideos((prevVideos) => [...prevVideos, ...selectedVideos]);
+    setCurrentVideo(selectedVideos[0]);
+
+    const thumbnailPromises = selectedVideos.map((video) => generateThumbnail(video));
+    Promise.all(thumbnailPromises).then((thumbnails) => {
+      setThumbnails((prevThumbnails) => [...prevThumbnails, ...thumbnails]);
+    });
+  };
+
+  const VideoPlayer = ({ boxLeft, boxTop, width, height, currentVideo, videoRef, handleVideoClick }) => (
+    <Draggable bounds="#drop-body">
       <div
         style={{
           position: 'absolute',
@@ -95,24 +74,69 @@ const DragLayout = () => {
           background: 'black',
         }}
       >
-      {currentVideo && (
-            <video
-              ref={videoRef}
-              src={URL.createObjectURL(currentVideo)}
-              autoPlay
-              style={{ objectFit: 'fill', width: '100%', height: '100%' }}
-              loop
-              onClick={handleVideoClick}
-            />
-          )}
+        {currentVideo && (
+          <video
+            ref={videoRef}
+            src={URL.createObjectURL(currentVideo)}
+            autoPlay
+            style={{ 
+              objectFit: 'fill', 
+              width: '100%', 
+              height: '100%', 
+              transform: flipped ? 'rotate(180deg)' : 'none',
+            }}
+            loop
+            onClick={handleVideoClick}
+          />
+        )}
       </div>
-      </Draggable>
+    </Draggable>
+  );
+  
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const modalBody = document.getElementById('drop-body');
+  
+    const offsetX = e.clientX - modalBody.getBoundingClientRect().left;
+    const offsetY = e.clientY - modalBody.getBoundingClientRect().top;
+  
+    let width, height;
+    if (draggedVideoSize === 'small') {
+      width = 100;
+      height = 200;
+    } else if (draggedVideoSize === 'medium') {
+      width = 200;
+      height = 300;
+    } else if (draggedVideoSize === 'large') {
+      width = 300;
+      height = 400;
+    } else {
+      return;
+    }
+  
+    setCurrentVideo((prevVideo) => ({
+      ...prevVideo,
+      width,
+      height,
+    }));
+  
+    const boxLeft = offsetX - width / 2;
+    const boxTop = offsetY - height / 2;
+  
+    const videoPlayerContainer = document.createElement('div');
+    modalBody.appendChild(videoPlayerContainer);
+    createRoot(videoPlayerContainer).render(
+      <VideoPlayer
+        boxLeft={boxLeft}
+        boxTop={boxTop}
+        width={width}
+        height={height}
+        currentVideo={currentVideo}
+        videoRef={videoRef}
+        handleVideoClick={handleVideoClick}
+      />
     );
-
-      const videoPlayerContainer = document.createElement('div');
-      modalBody.appendChild(videoPlayerContainer);
-      createRoot(videoPlayerContainer).render(<VideoPlayer />);
-};
+  };
   
   return (
     <div className="container">
@@ -205,6 +229,12 @@ const DragLayout = () => {
               />
             </svg>
           </button>
+         <h2>Reverse</h2>
+         <div>
+           <button onClick={flipVideo}>
+             Flip/Unflip
+            </button>
+        </div>
         </div>
       )}
 </div>
