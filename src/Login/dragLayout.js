@@ -11,7 +11,24 @@ const DragLayout = () => {
   const [thumbnails, setThumbnails] = useState([]);
   const [showPanel, setShowPanel] = useState(false);
   const videoRef = useRef(null);
-  const [flipped, setFlipped] = useState(false); 
+  const [flipped, setFlipped] = useState(false);
+  const [boxLeft, setBoxLeft] = useState(0);
+  const [boxTop, setBoxTop] = useState(0);
+
+    const handleDrag = (e, ui) => {
+    const { x, y } = ui;
+    setBoxLeft(x);
+    setBoxTop(y);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    if (name === 'x') {
+      setBoxLeft(Number(value));
+    } else if (name === 'y') {
+      setBoxTop(Number(value));
+    }
+  };
 
   const flipVideo = () => {
     if (videoRef.current) {
@@ -57,7 +74,7 @@ const DragLayout = () => {
   };
 
   const VideoPlayer = ({ boxLeft, boxTop, width, height, currentVideo, videoRef, handleVideoClick }) => (
-    <Draggable bounds="#drop-body">
+    <Draggable bounds="#drop-body" onDrag={handleDrag}>
       <div
         style={{
           position: 'absolute',
@@ -235,6 +252,18 @@ const DragLayout = () => {
              Flip/Unflip
             </button>
         </div>
+        <div>
+        <h2>Change Position</h2>
+        <label>
+          X-axis:
+          <input type="number" name="x" value={boxLeft} onChange={handleInputChange} />
+        </label>
+        <br />
+        <label>
+          Y-axis:
+          <input type="number" name="y" value={boxTop} onChange={handleInputChange} />
+        </label>
+      </div>
         </div>
       )}
 </div>
