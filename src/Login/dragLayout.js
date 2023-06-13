@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect  } from 'react'
 import Draggable from 'react-draggable';
 import {createRoot} from 'react-dom/client';
 import './dragLayout.css';
@@ -14,6 +14,9 @@ const DragLayout = () => {
   const [flipped, setFlipped] = useState(false);
   const [boxLeft, setBoxLeft] = useState(0);
   const [boxTop, setBoxTop] = useState(0);
+  const [showEditPanel, setShowEditPanel] = useState(false);
+  const [renderedVideoSize, setRenderedVideoSize] = useState(null);
+  const videoPlayerContainerRef = useRef(null);
 
     const handleDrag = (e, ui) => {
     const { x, y } = ui;
@@ -42,6 +45,11 @@ const DragLayout = () => {
     setShowPanel(!showPanel);
   };
 
+  const handleEditVideoClick = () => {
+    setShowEditPanel(true);
+    setShowEditPanel(!showEditPanel);
+  };
+
   const handleDragStart = (size, video) => {
     setdraggedVideoSize(size);
     setCurrentVideo(video);
@@ -60,7 +68,7 @@ const DragLayout = () => {
     setdraggedVideoSize(size);
     setShowPanel(!showPanel);
   };
-
+  
   const handleFileSelect = (event) => {
     const selectedFiles = event.target.files;
     const selectedVideos = Array.from(selectedFiles);
@@ -73,7 +81,7 @@ const DragLayout = () => {
     });
   };
 
-  const VideoPlayer = ({ boxLeft, boxTop, width, height, currentVideo, videoRef, handleVideoClick }) => (
+  const VideoPlayer = ({ boxLeft, boxTop, width, height, currentVideo, videoRef, handleEditVideoClick }) => (
     <Draggable bounds="#drop-body" onDrag={handleDrag}>
       <div
         style={{
@@ -103,7 +111,7 @@ const DragLayout = () => {
               transform: flipped ? 'rotate(180deg)' : 'none',
             }}
             loop
-            onClick={handleVideoClick}
+            onClick={handleEditVideoClick}
           />
         )}
       </div>
@@ -150,11 +158,72 @@ const DragLayout = () => {
         height={height}
         currentVideo={currentVideo}
         videoRef={videoRef}
-        handleVideoClick={handleVideoClick}
+        handleEditVideoClick={handleEditVideoClick}
       />
     );
+    videoPlayerContainerRef.current = videoPlayerContainer;
+  };
+
+  const handleUpdateVideoSize = (size) => {
+    setdraggedVideoSize(size);
   };
   
+  const handleResetVideoSize = () => {
+    let width, height;
+    if (draggedVideoSize === 'small') {
+      width = 100;
+      height = 200;
+    } else if (draggedVideoSize === 'medium') {
+      width = 200;
+      height = 300;
+    } else if (draggedVideoSize === 'large') {
+      width = 300;
+      height = 400;
+    } else {
+      return;
+    }
+
+    setCurrentVideo((prevVideo) => ({
+      ...prevVideo,
+      width,
+      height,
+    }));
+
+    if (videoPlayerContainerRef.current) {
+      const modalBody = document.getElementById('drop-body');
+      modalBody.removeChild(videoPlayerContainerRef.current);
+      videoPlayerContainerRef.current = null;
+
+      const offsetX = modalBody.getBoundingClientRect().left + width / 2;
+      const offsetY = modalBody.getBoundingClientRect().top + height / 2;
+
+      const boxLeft = offsetX - width / 2;
+      const boxTop = offsetY - height / 2;
+
+      const videoPlayerContainer = document.createElement('div');
+      modalBody.appendChild(videoPlayerContainer);
+      createRoot(videoPlayerContainer).render(
+        <VideoPlayer
+          boxLeft={boxLeft}
+          boxTop={boxTop}
+          width={width}
+          height={height}
+          currentVideo={currentVideo}
+          videoRef={videoRef}
+          handleEditVideoClick={handleEditVideoClick}
+        />
+      );
+
+      videoPlayerContainerRef.current = videoPlayerContainer;
+    }
+  };
+
+  useEffect(() => {
+    if (draggedVideoSize) {
+      handleUpdateVideoSize(draggedVideoSize);
+    }
+  }, [draggedVideoSize]);
+
   return (
     <div className="container">
   <div className="row">
@@ -166,9 +235,12 @@ const DragLayout = () => {
   </div>
 
   <div className="col-12">
-    <div 
-      className={`${ showPanel ? 'card card-body' : '' }`} 
-      style = {{transition: 'margin-right 0.3s ease', marginRight: showPanel ? '250px' : '0',}}
+    <div
+      className={`${showPanel || showEditPanel ? 'card card-body' : '' }`}
+      style={{
+        transition: 'margin-right 0.3s ease',
+        marginRight: showPanel || showEditPanel ? '250px' : '0',
+      }}
     >
       <div className="table-responsive">
         <table className="table table-bordered mb-0 text-center">
@@ -224,48 +296,69 @@ const DragLayout = () => {
       </div>
     </div>
   </div>
-  {showPanel && (
-        <div className='panel-style'>
-          <h2>Screen Size</h2>
-          <div>
-            <button onClick={() => handleScreenSizeChange('small')}>Small</button>
-            <button onClick={() => handleScreenSizeChange('medium')}>Medium</button>
-            <button onClick={() => handleScreenSizeChange('large')}>Large</button>
-          </div>
-          <button style={{ position: 'absolute', top: '10px', right: '10px' }} onClick={handleVideoClick}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              width="24"
-              height="24"
-            >
-              <path d="M0 0h24v24H0z" fill="none" />
-              <path
-                fill="currentColor"
-                d="M17.66 6.34L12.83 11.17l4.54 4.54A.996.996 0 1 1 15.54 18l-4.54-4.54-4.54 4.54A.996.996 0 1 1 5.46 15.54l4.54-4.54L5.46 6.34A.996.996 0 1 1 6.88 4.93l4.54 4.54 4.54-4.54a.996.996 0 1 1 1.41 1.41z"
-              />
-            </svg>
+  {(showPanel || showEditPanel) && (
+  <div className='panel-style'>
+    {showPanel && ( 
+      <div>
+        <h2>Screen Size</h2>
+        <button onClick={() => handleScreenSizeChange('small')}>Small</button>
+        <button onClick={() => handleScreenSizeChange('medium')}>Medium</button>
+        <button onClick={() => handleScreenSizeChange('large')}>Large</button>
+      </div>
+    )}
+      <button
+        style={{ position: 'absolute', top: '10px', right: '10px' }}
+        onClick={showPanel ? handleVideoClick : (showEditPanel ? handleEditVideoClick : undefined)}
+      >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        width="24"
+        height="24"
+      >
+        <path d="M0 0h24v24H0z" fill="none" />
+        <path
+          fill="currentColor"
+          d="M17.66 6.34L12.83 11.17l4.54 4.54A.996.996 0 1 1 15.54 
+          18l-4.54-4.54-4.54 4.54A.996.996 0 1 1 5.46 15.54l4.54-4.54L5.46 
+          6.34A.996.996 0 1 1 6.88 4.93l4.54 4.54 4.54-4.54a.996.996 0 1 1 1.41 1.41z"
+        />
+      </svg>
+    </button>
+
+    {showEditPanel && (
+      <div>
+        <h2>Update Video</h2>
+        <div>
+          <button onClick={flipVideo}>
+            Reverse
           </button>
-         <h2>Reverse</h2>
-         <div>
-           <button onClick={flipVideo}>
-             Flip/Unflip
-            </button>
         </div>
+
         <div>
         <h2>Change Position</h2>
-        <label>
-          X-axis:
-          <input type="number" name="x" value={boxLeft} onChange={handleInputChange} />
-        </label>
-        <br />
-        <label>
-          Y-axis:
-          <input type="number" name="y" value={boxTop} onChange={handleInputChange} />
-        </label>
-      </div>
+          <label>
+            X-axis:
+            <input type="number" name="x" value={boxLeft} onChange={handleInputChange} />
+          </label>
+      <br />
+          <label>
+            Y-axis:
+            <input type="number" name="y" value={boxTop} onChange={handleInputChange} />
+          </label>
         </div>
-      )}
+        <div>
+          <h2>Update Video Size </h2>
+          <button onClick={() => handleUpdateVideoSize('small')}>Small</button>
+          <button onClick={() => handleUpdateVideoSize('medium')}>Medium</button>
+          <button onClick={() => handleUpdateVideoSize('large')}>Large</button>
+          
+          <button onClick={handleResetVideoSize}>Reset Size</button>
+        </div>
+      </div>
+    )}
+  </div>
+)}
 </div>
   )
 }
