@@ -5,7 +5,7 @@ import './dragLayout.css';
 import { generateThumbnail } from './generateThumbnail';
 
 const DragLayout = () => {
-  const [draggedVideoSize, setdraggedVideoSize] = useState(null);
+  const [draggedVideoSize, setDraggedVideoSize] = useState(null);
   const [currentVideo, setCurrentVideo] = useState(null);
   const [videos, setVideos] = useState([]);
   const [thumbnails, setThumbnails] = useState([]);
@@ -51,12 +51,12 @@ const DragLayout = () => {
   };
 
   const handleDragStart = (size, video) => {
-    setdraggedVideoSize(size);
+    setDraggedVideoSize(size);
     setCurrentVideo(video);
   };
 
   const handleDragStop = () => {
-    setdraggedVideoSize(null);
+    setDraggedVideoSize(null);
     setCurrentVideo(null);
   };
 
@@ -65,7 +65,7 @@ const DragLayout = () => {
   };
 
   const handleScreenSizeChange = (size) => {
-    setdraggedVideoSize(size);
+    setDraggedVideoSize(size);
     setShowPanel(!showPanel);
   };
   
@@ -81,7 +81,9 @@ const DragLayout = () => {
     });
   };
 
-  const VideoPlayer = ({ boxLeft, boxTop, width, height, currentVideo, videoRef, handleEditVideoClick }) => (
+  const VideoPlayer = ({ 
+    boxLeft, boxTop, width, height, 
+    currentVideo, videoRef, handleEditVideoClick }) => (
     <Draggable bounds="#drop-body" onDrag={handleDrag}>
       <div
         style={{
@@ -165,64 +167,48 @@ const DragLayout = () => {
   };
 
   const handleUpdateVideoSize = (size) => {
-    setdraggedVideoSize(size);
+    setDraggedVideoSize(size);
   };
   
-  const handleResetVideoSize = () => {
-    let width, height;
-    if (draggedVideoSize === 'small') {
-      width = 100;
-      height = 200;
-    } else if (draggedVideoSize === 'medium') {
-      width = 200;
-      height = 300;
-    } else if (draggedVideoSize === 'large') {
-      width = 300;
-      height = 400;
-    } else {
-      return;
-    }
+  const handleNewVideo = () => {
+  let width, height;
+  if (draggedVideoSize === 'small') {
+    width = 100;
+    height = 200;
+  } else if (draggedVideoSize === 'medium') {
+    width = 200;
+    height = 300;
+  } else if (draggedVideoSize === 'large') {
+    width = 300;
+    height = 400;
+  } else {
+    return;
+  }
 
-    setCurrentVideo((prevVideo) => ({
-      ...prevVideo,
-      width,
-      height,
-    }));
+  setCurrentVideo((prevVideo) => ({
+    ...prevVideo,
+    width,
+    height,
+  }));
 
-    if (videoPlayerContainerRef.current) {
-      const modalBody = document.getElementById('drop-body');
-      modalBody.removeChild(videoPlayerContainerRef.current);
-      videoPlayerContainerRef.current = null;
+  if (videoPlayerContainerRef.current) {
+    const videoPlayerContainer = videoPlayerContainerRef.current;
+    const videoPlayer = videoPlayerContainer.firstChild;
 
-      const offsetX = modalBody.getBoundingClientRect().left + width / 2;
-      const offsetY = modalBody.getBoundingClientRect().top + height / 2;
+    videoPlayer.style.width = `${width}px`;
+    videoPlayer.style.height = `${height}px`;
 
-      const boxLeft = offsetX - width / 2;
-      const boxTop = offsetY - height / 2;
+    const offsetX = videoPlayerContainer.getBoundingClientRect().left + width / 2;
+    const offsetY = videoPlayerContainer.getBoundingClientRect().top + height / 2;
 
-      const videoPlayerContainer = document.createElement('div');
-      modalBody.appendChild(videoPlayerContainer);
-      createRoot(videoPlayerContainer).render(
-        <VideoPlayer
-          boxLeft={boxLeft}
-          boxTop={boxTop}
-          width={width}
-          height={height}
-          currentVideo={currentVideo}
-          videoRef={videoRef}
-          handleEditVideoClick={handleEditVideoClick}
-        />
-      );
+    const boxLeft = offsetX - width / 2;
+    const boxTop = offsetY - height / 2;
 
-      videoPlayerContainerRef.current = videoPlayerContainer;
-    }
-  };
+    videoPlayerContainer.style.left = `${boxLeft}px`;
+    videoPlayerContainer.style.top = `${boxTop}px`;
+  }
+};
 
-  useEffect(() => {
-    if (draggedVideoSize) {
-      handleUpdateVideoSize(draggedVideoSize);
-    }
-  }, [draggedVideoSize]);
 
   return (
     <div className="container">
@@ -353,7 +339,7 @@ const DragLayout = () => {
           <button onClick={() => handleUpdateVideoSize('medium')}>Medium</button>
           <button onClick={() => handleUpdateVideoSize('large')}>Large</button>
           
-          <button onClick={handleResetVideoSize}>Reset Size</button>
+          <button onClick={handleNewVideo}>New Video</button>
         </div>
       </div>
     )}
