@@ -63,7 +63,6 @@ const DragLayout = () => {
     e.preventDefault();
   };
 
-
   const handleScreenSizeChange = (size) => {
     setDraggedVideoSize(size);
     setShowPanel(!showPanel);
