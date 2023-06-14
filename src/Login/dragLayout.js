@@ -15,7 +15,6 @@ const DragLayout = () => {
   const [boxLeft, setBoxLeft] = useState(0);
   const [boxTop, setBoxTop] = useState(0);
   const [showEditPanel, setShowEditPanel] = useState(false);
-  const [renderedVideoSize, setRenderedVideoSize] = useState(null);
   const videoPlayerContainerRef = useRef(null);
 
     const handleDrag = (e, ui) => {
@@ -64,9 +63,14 @@ const DragLayout = () => {
     e.preventDefault();
   };
 
+
   const handleScreenSizeChange = (size) => {
     setDraggedVideoSize(size);
     setShowPanel(!showPanel);
+  };
+
+  const handleUpdateVideoSize = (size) => {
+    setDraggedVideoSize(size);
   };
   
   const handleFileSelect = (event) => {
@@ -165,10 +169,6 @@ const DragLayout = () => {
     );
     videoPlayerContainerRef.current = videoPlayerContainer;
   };
-
-  const handleUpdateVideoSize = (size) => {
-    setDraggedVideoSize(size);
-  };
   
   const handleNewVideo = () => {
   let width, height;
@@ -208,7 +208,6 @@ const DragLayout = () => {
     videoPlayerContainer.style.top = `${boxTop}px`;
   }
 };
-
 
   return (
     <div className="container">
