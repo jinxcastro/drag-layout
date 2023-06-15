@@ -3,11 +3,12 @@ import Draggable from 'react-draggable';
 import {createRoot} from 'react-dom/client';
 import './dragLayout.css';
 import { generateThumbnail } from './generateThumbnail';
+import Cookies from 'universal-cookie';
 
 const DragLayout = () => {
   const [draggedVideoSize, setDraggedVideoSize] = useState(null);
   const [currentVideo, setCurrentVideo] = useState(null);
-  const [videos, setVideos] = useState([]);
+  const [videos, setVideos] = useState([])
   const [thumbnails, setThumbnails] = useState([]);
   const [showPanel, setShowPanel] = useState(false);
   const videoRef = useRef(null);
@@ -16,6 +17,8 @@ const DragLayout = () => {
   const [boxTop, setBoxTop] = useState(0);
   const [showEditPanel, setShowEditPanel] = useState(false);
   const videoPlayerContainerRef = useRef(null);
+  
+
 
     const handleDrag = (e, ui) => {
     const { x, y } = ui;
@@ -77,7 +80,7 @@ const DragLayout = () => {
     const selectedVideos = Array.from(selectedFiles);
     setVideos((prevVideos) => [...prevVideos, ...selectedVideos]);
     setCurrentVideo(selectedVideos[0]);
-
+  
     const thumbnailPromises = selectedVideos.map((video) => generateThumbnail(video));
     Promise.all(thumbnailPromises).then((thumbnails) => {
       setThumbnails((prevThumbnails) => [...prevThumbnails, ...thumbnails]);
@@ -144,12 +147,6 @@ const DragLayout = () => {
       return;
     }
   
-    setCurrentVideo((prevVideo) => ({
-      ...prevVideo,
-      width,
-      height,
-    }));
-  
     const boxLeft = offsetX - width / 2;
     const boxTop = offsetY - height / 2;
   
@@ -167,6 +164,11 @@ const DragLayout = () => {
       />
     );
     videoPlayerContainerRef.current = videoPlayerContainer;
+  
+    const updatedVideos = videos.filter((video) => video.name !== currentVideo.name);
+    const updatedThumbnails = thumbnails.filter((thumbnail, index) => index !== videos.indexOf(currentVideo));
+    setVideos(updatedVideos);
+    setThumbnails(updatedThumbnails);
   };
   
   const handleNewVideo = () => {
