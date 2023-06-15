@@ -16,7 +16,7 @@ const DragLayout = () => {
   const [boxLeft, setBoxLeft] = useState(0);
   const [boxTop, setBoxTop] = useState(0);
   const [showEditPanel, setShowEditPanel] = useState(false);
-  const videoPlayerContainerRef = useRef(null);
+  const videoPlayerContainerRefs = useRef([]);
   
 
 
@@ -129,10 +129,10 @@ const DragLayout = () => {
   const handleDrop = (e) => {
     e.preventDefault();
     const modalBody = document.getElementById('drop-body');
-  
+
     const offsetX = e.clientX - modalBody.getBoundingClientRect().left;
     const offsetY = e.clientY - modalBody.getBoundingClientRect().top;
-  
+
     let width, height;
     if (draggedVideoSize === 'small') {
       width = 100;
@@ -146,10 +146,10 @@ const DragLayout = () => {
     } else {
       return;
     }
-  
+
     const boxLeft = offsetX - width / 2;
     const boxTop = offsetY - height / 2;
-  
+
     const videoPlayerContainer = document.createElement('div');
     modalBody.appendChild(videoPlayerContainer);
     createRoot(videoPlayerContainer).render(
@@ -163,52 +163,51 @@ const DragLayout = () => {
         handleEditVideoClick={handleEditVideoClick}
       />
     );
-    videoPlayerContainerRef.current = videoPlayerContainer;
-  
+    videoPlayerContainerRefs.current.push(videoPlayerContainer);
+
     const updatedVideos = videos.filter((video) => video.name !== currentVideo.name);
     const updatedThumbnails = thumbnails.filter((thumbnail, index) => index !== videos.indexOf(currentVideo));
     setVideos(updatedVideos);
     setThumbnails(updatedThumbnails);
   };
-  
-  const handleNewVideo = () => {
-  let width, height;
-  if (draggedVideoSize === 'small') {
-    width = 100;
-    height = 200;
-  } else if (draggedVideoSize === 'medium') {
-    width = 200;
-    height = 300;
-  } else if (draggedVideoSize === 'large') {
-    width = 300;
-    height = 400;
-  } else {
-    return;
-  }
 
-  setCurrentVideo((prevVideo) => ({
-    ...prevVideo,
-    width,
-    height,
-  }));
+  const handleUpdateSize = () => {
+    let width, height;
+    if (draggedVideoSize === 'small') {
+      width = 100;
+      height = 200;
+    } else if (draggedVideoSize === 'medium') {
+      width = 200;
+      height = 300;
+    } else if (draggedVideoSize === 'large') {
+      width = 300;
+      height = 400;
+    } else {
+      return;
+    }
 
-  if (videoPlayerContainerRef.current) {
-    const videoPlayerContainer = videoPlayerContainerRef.current;
-    const videoPlayer = videoPlayerContainer.firstChild;
+    setCurrentVideo((prevVideo) => ({
+      ...prevVideo,
+      width,
+      height,
+    }));
 
-    videoPlayer.style.width = `${width}px`;
-    videoPlayer.style.height = `${height}px`;
+    videoPlayerContainerRefs.current.forEach((videoPlayerContainer) => {
+      const videoPlayer = videoPlayerContainer.firstChild;
 
-    const offsetX = videoPlayerContainer.getBoundingClientRect().left + width / 2;
-    const offsetY = videoPlayerContainer.getBoundingClientRect().top + height / 2;
+      videoPlayer.style.width = `${width}px`;
+      videoPlayer.style.height = `${height}px`;
 
-    const boxLeft = offsetX - width / 2;
-    const boxTop = offsetY - height / 2;
+      const offsetX = videoPlayerContainer.getBoundingClientRect().left + width / 2;
+      const offsetY = videoPlayerContainer.getBoundingClientRect().top + height / 2;
 
-    videoPlayerContainer.style.left = `${boxLeft}px`;
-    videoPlayerContainer.style.top = `${boxTop}px`;
-  }
-};
+      const boxLeft = offsetX - width / 2;
+      const boxTop = offsetY - height / 2;
+
+      videoPlayerContainer.style.left = `${boxLeft}px`;
+      videoPlayerContainer.style.top = `${boxTop}px`;
+    });
+  };
 
   return (
     <div className="container">
@@ -339,7 +338,7 @@ const DragLayout = () => {
           <button onClick={() => handleUpdateVideoSize('medium')}>Medium</button>
           <button onClick={() => handleUpdateVideoSize('large')}>Large</button>
           
-          <button onClick={handleNewVideo}>New Video</button>
+          <button onClick={handleUpdateSize}>New Video</button>
         </div>
       </div>
     )}
