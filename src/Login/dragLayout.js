@@ -4,6 +4,7 @@ import {createRoot} from 'react-dom/client';
 import './dragLayout.css';
 import { generateThumbnail } from './generateThumbnail';
 import Cookies from 'universal-cookie';
+import { v4 as uuidv4 } from 'uuid';
 
 const DragLayout = () => {
   const [draggedVideoSize, setDraggedVideoSize] = useState(null);
@@ -13,27 +14,8 @@ const DragLayout = () => {
   const [showPanel, setShowPanel] = useState(false);
   const videoRef = useRef(null);
   const [flipped, setFlipped] = useState(false);
-  const [boxLeft, setBoxLeft] = useState(0);
-  const [boxTop, setBoxTop] = useState(0);
   const [showEditPanel, setShowEditPanel] = useState(false);
   const videoPlayerContainerRefs = useRef([]);
-  
-
-
-    const handleDrag = (e, ui) => {
-    const { x, y } = ui;
-    setBoxLeft(x);
-    setBoxTop(y);
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    if (name === 'x') {
-      setBoxLeft(Number(value));
-    } else if (name === 'y') {
-      setBoxTop(Number(value));
-    }
-  };
 
   const flipVideo = () => {
     if (videoRef.current) {
@@ -90,7 +72,7 @@ const DragLayout = () => {
   const VideoPlayer = ({ 
     boxLeft, boxTop, width, height, 
     currentVideo, videoRef, handleEditVideoClick }) => (
-    <Draggable bounds="#drop-body" onDrag={handleDrag}>
+    <Draggable bounds="#drop-body">
       <div
         style={{
           position: 'absolute',
@@ -211,21 +193,20 @@ const DragLayout = () => {
 
   return (
     <div className="container">
-  <div className="row">
-    <div className='col-12 search-btn-row'>
-      <div className='float-start'>
-        <input type="file" multiple onChange={handleFileSelect} />
+      <div className="row">
+        <div className='col-12 search-btn-row'>
+          <div className='float-start'>
+            <input type="file" multiple onChange={handleFileSelect} />
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
 
   <div className="col-12">
     <div
       className={`${showPanel || showEditPanel ? 'card card-body' : '' }`}
       style={{
         transition: 'margin-right 0.3s ease',
-        marginRight: showPanel || showEditPanel ? '250px' : '0',
-      }}
+        marginRight: showPanel || showEditPanel ? '250px' : '0', }}
     >
       <div className="table-responsive">
         <table className="table table-bordered mb-0 text-center">
@@ -319,26 +300,13 @@ const DragLayout = () => {
             Reverse
           </button>
         </div>
-
-        <div>
-        <h2>Change Position</h2>
-          <label>
-            X-axis:
-            <input type="number" name="x" value={boxLeft} onChange={handleInputChange} />
-          </label>
-      <br />
-          <label>
-            Y-axis:
-            <input type="number" name="y" value={boxTop} onChange={handleInputChange} />
-          </label>
-        </div>
         <div>
           <h2>Update Video Size </h2>
           <button onClick={() => handleUpdateVideoSize('small')}>Small</button>
           <button onClick={() => handleUpdateVideoSize('medium')}>Medium</button>
           <button onClick={() => handleUpdateVideoSize('large')}>Large</button>
           
-          <button onClick={handleUpdateSize}>New Video</button>
+          <button onClick={handleUpdateSize}>Update Size</button>
         </div>
       </div>
     )}

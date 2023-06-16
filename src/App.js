@@ -12,7 +12,6 @@ import { BrowserRouter as Router , Routes, Route, Link, useLocation } from "reac
 import EditAccount from "./components/product/edit.component";
 import AccountList from "./components/product/list.component";
 import CreateAccount from "./components/product/create.component";
-import Deposit from "./components/product/deposit.component";
 import DragLayout from "./Login/dragLayout";
 
 function App() {
@@ -50,7 +49,6 @@ function MainPage() {
             <Routes>
               <Route path="/product/create" element={<CreateAccount />} />
               <Route path="/product/edit/:id" element={<EditAccount />} />
-              <Route path="/product/deposit/:id" element={<Deposit />} />
               <Route path="/product/list/:id" element={<AccountList />} />
               <Route exact path='/' element={<DragLayout />} />
             </Routes>
