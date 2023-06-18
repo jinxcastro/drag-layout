@@ -1,70 +1,70 @@
 import React, { useEffect, useState } from "react";
-import Form from 'react-bootstrap/Form'
-import {Button, ButtonGroup} from 'react-bootstrap';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { useNavigate, useParams, Link } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
 export default function EditUser() {
   const navigate = useNavigate();
+  const { id } = useParams();
 
-  const { id } = useParams()
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [video, setVideo] = useState(null);
+  const [validationError, setValidationError] = useState({});
 
-  const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
-  const [deposit, setDeposit] = useState("")
-  const [status, setStatus] = useState("")
+  useEffect(() => {
+    fetchProduct();
+  }, []);
 
-  const [validationError,setValidationError] = useState({})
-
-  useEffect(()=>{
-    fetchAccount()
-  },[])
-
-  const fetchAccount = async () => {
-    await axios.get(`http://localhost:8000/api/products/${id}`).then(({data})=>{
-      const { title, description, deposit } = data.product
-      setTitle(title)
-      setDescription(description)
-      setDeposit(deposit)
-      setStatus(status)
-    }).catch(({response:{data}})=>{
+  const fetchProduct = async () => {
+    await axios.get(`http://localhost:8000/api/products/${id}`).then(({ data }) => {
+      const { title, description } = data.product;
+      setTitle(title);
+      setDescription(description);
+    }).catch(({ response: { data } }) => {
       Swal.fire({
-        text:data.message,
-        icon:"error"
-      })
-    })
-  }
+        text: data.message,
+        icon: "error"
+      });
+    });
+  };
 
-  const updateAccount = async (e) => {
+  const changeHandler = (event) => {
+    setVideo(event.target.files[0]);
+  };
+
+  const updateProduct = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData()
+    const formData = new FormData();
     formData.append('_method', 'PATCH');
-    formData.append('title', title)
-    formData.append('description', description)
-    formData.append('deposit', deposit)
-    formData.append('status', status)
+    formData.append('title', title);
+    formData.append('description', description);
+    if (video !== null) {
+      formData.append('video', video);
+    }
 
-    await axios.post(`http://localhost:8000/api/products/${id}`, formData).then(({data})=>{
+    await axios.post(`http://localhost:8000/api/products/${id}`, formData).then(({ data }) => {
       Swal.fire({
-        icon:"success",
-        text:data.message
-      })
-      navigate("/product/list/:id")
-    }).catch(({response})=>{
-      if(response.status===422){
-        setValidationError(response.data.errors)
-      }else{
+        icon: "success",
+        text: data.message
+      });
+      navigate("/");
+    }).catch(({ response }) => {
+      if (response.status === 422) {
+        setValidationError(response.data.errors);
+      } else {
         Swal.fire({
-          text:response.data.message,
-          icon:"error"
-        })
+          text: response.data.message,
+          icon: "error"
+        });
       }
-    })
-  }
+    });
+  };
 
   return (
     <div className="container">
@@ -72,7 +72,7 @@ export default function EditUser() {
         <div className="col-12 col-sm-12 col-md-6">
           <div className="card">
             <div className="card-body">
-              <h4 className="card-title">Update Account</h4>
+              <h4 className="card-title">Update Product</h4>
               <hr />
               <div className="form-wrapper">
                 {
@@ -82,8 +82,8 @@ export default function EditUser() {
                         <div className="alert alert-danger">
                           <ul className="mb-0">
                             {
-                              Object.entries(validationError).map(([key, value])=>(
-                                <li key={key}>{value}</li>   
+                              Object.entries(validationError).map(([key, value]) => (
+                                <li key={key}>{value}</li>
                               ))
                             }
                           </ul>
@@ -92,65 +92,38 @@ export default function EditUser() {
                     </div>
                   )
                 }
-                <Form onSubmit={updateAccount}>
-                  <Row> 
-                      <Col>
-                        <Form.Group controlId="Name">
-                            <Form.Label>Name</Form.Label>
-                            <Form.Control type="text" maxLength={16} value={title} onChange={(event)=>{
-                              setTitle(event.target.value)
-                            }}/>
-                        </Form.Group>
-                      </Col>  
+                <Form onSubmit={updateProduct}>
+                  <Row>
+                    <Col>
+                      <Form.Group controlId="Name">
+                        <Form.Label>Title</Form.Label>
+                        <Form.Control type="text" value={title} onChange={(event) => {
+                          setTitle(event.target.value);
+                        }} />
+                      </Form.Group>
+                    </Col>
                   </Row>
                   <Row className="my-3">
-                      <Col>
-                        <Form.Group controlId="Description">
-                            <Form.Label>Account Number</Form.Label>
-                            <Form.Control type="text" maxLength={16} value={description} onChange={(event)=>{
-                              setDescription(event.target.value)
-                            }}/>
-                        </Form.Group>
-                      </Col>
+                    <Col>
+                      <Form.Group controlId="Description">
+                        <Form.Label>Description</Form.Label>
+                        <Form.Control as="textarea" rows={3} value={description} onChange={(event) => {
+                          setDescription(event.target.value);
+                        }} />
+                      </Form.Group>
+                    </Col>
                   </Row>
-                  <Row className="my-3">
-                      <Col>
-                        <Form.Group controlId="Deposit">
-                            <Form.Label>Deposit</Form.Label>
-                            <Form.Control type="text" maxLength={16} value={deposit} onChange={(event)=>{
-                              setDeposit(event.target.value)
-                            }}/>
-                        </Form.Group>
-                      </Col>
+                  <Row>
+                    <Col>
+                      <Form.Group controlId="Video" className="mb-3">
+                        <Form.Label>Video</Form.Label>
+                        <Form.Control type="file" onChange={changeHandler} />
+                      </Form.Group>
+                    </Col>
                   </Row>
-                  <Row> 
-                  <Col>
-                    <Form.Group controlId="Status">
-                      <ButtonGroup>
-                        <Button
-                          variant={status === 'active' ? 'primary' : 'outline-primary'}
-                          onClick={() => setStatus('active')}
-                        >
-                          Active
-                        </Button>
-                        <Button
-                          variant={status === 'disabled' ? 'primary' : 'outline-primary'}
-                          onClick={() => setStatus('disabled')}
-                        >
-                          Disabled
-                        </Button>
-                      </ButtonGroup>
-                    </Form.Group>
-                  </Col>  
-                </Row>
-                  <Button className="mt-2 btn-add-acc float-end" size="lg" block="block" type="submit">
+                  <Button variant="primary" className="mt-2" size="lg" block="block" type="submit">
                     Update
                   </Button>
-                  <Link to="/product/list/:id">
-                    <Button className="btn-cancel mt-2 float-start" size="lg" block="block">
-                        Cancel
-                    </Button>
-                </Link>
                 </Form>
               </div>
             </div>
@@ -158,5 +131,5 @@ export default function EditUser() {
         </div>
       </div>
     </div>
-  )
+  );
 }

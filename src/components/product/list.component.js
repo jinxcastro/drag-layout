@@ -1,35 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import {Button, Navbar} from 'react-bootstrap'
+import Button from 'react-bootstrap/Button'
 import axios from 'axios';
 import Swal from 'sweetalert2'
-// import {MoreVertIcon, Menu, MenuItem, anchorEl} from '@material-ui/icons/MoreVert';
-
-import CIcon from '@coreui/icons-react'
-import {
-    CDropdown,
-    CDropdownToggle,
-    CDropdownMenu,
-} from '@coreui/react'
-
-import './component.css'
 
 export default function List() {
 
-    const [accounts, setAccounts] = useState([])
-    const [searchAccount, setSearchAccount] = useState('');
-      
-    const filteredAccounts = accounts.filter((account) =>
-        account.title.toLowerCase().includes(searchAccount.toLowerCase())
-  );
+    const [products, setProducts] = useState([])
 
     useEffect(()=>{
-        fetchAccounts()     
+        fetchProducts() 
     },[])
 
-    const fetchAccounts = async () => {
+    const fetchProducts = async () => {
         await axios.get(`http://localhost:8000/api/products`).then(({data})=>{
-            setAccounts(data)
+            setProducts(data)
         })
     }
 
@@ -55,7 +40,7 @@ export default function List() {
                 icon:"success",
                 text:data.message
             })
-            fetchAccounts()
+            fetchProducts()
           }).catch(({response:{data}})=>{
             Swal.fire({
                 text:data.message,
@@ -65,94 +50,57 @@ export default function List() {
     }
 
     return (
-        
       <div className="container">
-            <div className="row">
-                <div className='col-12 search-btn-row'>
-                    <div className='float-start'>
-                        <div className='input-group'>
-                            <input
-                                type='text'
-                                className='form-control'
-                                placeholder='Search Account...'
-                                value={searchAccount}
-                                onChange={(e) => setSearchAccount(e.target.value)}
-                            />
-                            <button className='btn btn-outline-secondary' type='button'> Search </button>
-                        </div>
-                    </div>
-                    <div className='float-end'>
-                        <Link className='btn btn-add-acc ms-2' to={"/product/create"}> Add New Account </Link>
-                    </div>
-                </div>
-
+          <div className="row">
+            <div className='col-12'>
+                <Link className='btn btn-primary mb-2 float-end' to={"/product/create"}>
+                    Create Product
+                </Link>
+            </div>
             <div className="col-12">
                 <div className="card card-body">
                     <div className="table-responsive">
                         <table className="table table-bordered mb-0 text-center">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Account Number</th>
-                                    <th>Status</th>
+                                    <th>Title</th>
+                                    <th>Description</th>
+                                    {/* <th>Image</th> */}
+                                    <th>Video</th> 
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredAccounts.length > 0 ? (
-                                    filteredAccounts.map((row, key) => (
-                                    <tr key={key}>
-                                        <td>{row.title}</td>
-                                        <td>{row.description}</td>
-                                        <td>{row.status}</td>
-                                        
-                                        <td>
-                                        <CDropdown>
-                                            <CDropdownToggle color="secondary" />
-                                            <CDropdownMenu>
-                                                {row.status !== 'disabled' && (
-                                                <Button
-                                                    as={Link}
-                                                    to={`/product/deposit/${row.id}`}
-                                                    variant="primary"
-                                                    className="deposit-button"
-                                                >
-                                                    Deposit
-                                                </Button>
-                                                )}
-
-                                                <Button
-                                                    as={Link}
-                                                    to={`/product/edit/${row.id}`}
-                                                    variant="primary"
-                                                    className="edit-button"
-                                                    >
-                                                    Edit
-                                                </Button>
-
-                                                <Button
-                                                    onClick={() => deleteProduct(row.id)}
-                                                    variant="danger"
-                                                    className="delete-button"
-                                                    >
-                                                    Delete
-                                                </Button>
-                                            </CDropdownMenu>
-                                            </CDropdown>
-                                        </td>
-                                    </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                    <td colSpan='4'>No matching account found.</td>
-                                    </tr>
-                                )}
+                                {
+                                    products.length > 0 && (
+                                        products.map((row, key)=>(
+                                            <tr key={key}>
+                                                <td>{row.title}</td>
+                                                <td>{row.description}</td>
+                                                
+                                                <td>
+                                                    <video width="150px" controls>
+                                                        <source src={`http://localhost:8000/storage/product/video/${row.video}`} type="video/mp4" />
+                                                    </video>
+                                                </td>
+                                                <td>
+                                                    <Link to={`/product/edit/${row.id}`} className='btn btn-success me-2'>
+                                                        Edit
+                                                    </Link>
+                                                    <Button variant="danger" onClick={()=>deleteProduct(row.id)}>
+                                                        Delete
+                                                    </Button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )
+                                }
                             </tbody>
                         </table>
-                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+          </div>
+      </div>
     )
 }
