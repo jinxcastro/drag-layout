@@ -73,6 +73,7 @@ import { BrowserRouter as Router , Routes, Route, Link } from "react-router-dom"
 import EditProduct from "./components/product/edit.component";
 import ProductList from "./components/product/list.component";
 import CreateProduct from "./components/product/create.component";
+import DragLayout from "./Login/dragLayout";
 
 function App() {
   return (<Router>
@@ -80,6 +81,9 @@ function App() {
       <Container>
         <Link to={"/"} className="navbar-brand text-white">
           Basic Crud App
+        </Link>
+        <Link to={"/Login/dragLayout"} className="navbar-brand text-white">
+          Oten
         </Link>
       </Container>
     </Navbar>
@@ -90,6 +94,7 @@ function App() {
           <Routes>
             <Route path="/product/create" element={<CreateProduct />} />
             <Route path="/product/edit/:id" element={<EditProduct />} />
+            <Route path="/Login/dragLayout" element={<DragLayout />} />
             <Route exact path='/' element={<ProductList />} />
           </Routes>
         </Col>

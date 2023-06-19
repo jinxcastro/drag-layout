@@ -65,33 +65,32 @@ export default function List() {
                                 <tr>
                                     <th>Title</th>
                                     <th>Description</th>
-                                    {/* <th>Image</th> */}
                                     <th>Video</th> 
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {
-                                    products.length > 0 && (
-                                        products.map((row, key)=>(
-                                            <tr key={key}>
-                                                <td>{row.title}</td>
-                                                <td>{row.description}</td>
-                                                
-                                                <td>
-                                                    <video width="150px" controls>
-                                                        <source src={`http://localhost:8000/storage/product/video/${row.video}`} type="video/mp4" />
-                                                    </video>
-                                                </td>
-                                                <td>
-                                                    <Link to={`/product/edit/${row.id}`} className='btn btn-success me-2'>
-                                                        Edit
-                                                    </Link>
-                                                    <Button variant="danger" onClick={()=>deleteProduct(row.id)}>
-                                                        Delete
-                                                    </Button>
-                                                </td>
-                                            </tr>
+                                products.length > 0 && (
+                                products.map((row, key)=>(
+                                    <tr key={key}>
+                                        <td>{row.title}</td>
+                        	             <td>{row.description}</td>        
+                                            <td>
+                                                <video width="75px">
+                                                    <source src={`http://localhost:8000/storage/product/video/${row.video}`} 
+                                                    type="video/mp4" />
+                                                </video>
+                                            </td>
+                                            <td>
+                                                <Link to={`/product/edit/${row.id}`} className='btn btn-success me-2'>
+                                                    Edit
+                                                </Link>
+                                                <Button variant="danger" onClick={()=>deleteProduct(row.id)}>
+                                                    Delete
+                                                </Button>
+                                            </td>
+                                    </tr>
                                         ))
                                     )
                                 }
