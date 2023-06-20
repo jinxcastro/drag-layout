@@ -8,8 +8,7 @@ import Draggable from 'react-draggable';
 export default function List() {
 
     const [products, setProducts] = useState([])
-    const [draggedVideo, setDraggedVideo] = useState(null);
-
+    const [draggedVideos, setDraggedVideos] = useState(null);
 
     useEffect(()=>{
         fetchProducts() 
@@ -52,23 +51,32 @@ export default function List() {
           })
     }
 
-    const handleDrop = (event) => {
-      event.preventDefault();
-      const videoSrc = event.dataTransfer.getData('text/plain');
-      const selectedSize = event.dataTransfer.getData('size');
-      const { height, width } = getScreenSizeDimensions(selectedSize);
-  
-      setDraggedVideo({ videoSrc, selectedSize, height, width });
-      localStorage.setItem('draggedVideo', JSON.stringify({ videoSrc, selectedSize, height, width }));
-    };
+const handleDrop = (event) => {
+  event.preventDefault();
+  const videoSrc = event.dataTransfer.getData('text/plain');
+  const selectedSize = event.dataTransfer.getData('size');
+  const { height, width } = getScreenSizeDimensions(selectedSize);
 
-    useEffect(() => {
-      const storedVideo = localStorage.getItem('draggedVideo');
-      if (storedVideo) {
-        setDraggedVideo(JSON.parse(storedVideo));
-      }
-    }, []);
-    
+  const existingVideos = JSON.parse(localStorage.getItem('draggedVideos')) || [];
+  const newVideo = { videoSrc, selectedSize, height, width };
+  const updatedVideos = [...existingVideos, newVideo];
+
+  setDraggedVideos(updatedVideos);
+  localStorage.setItem('draggedVideos', JSON.stringify(updatedVideos));
+  };
+
+  const handleRemoveAll = () => {
+    setDraggedVideos([]);
+    localStorage.removeItem('draggedVideos');
+  };
+
+  useEffect(() => {
+    const storedVideos = localStorage.getItem('draggedVideos');
+    if (storedVideos) {
+      setDraggedVideos(JSON.parse(storedVideos));
+    }
+  }, []);
+
     const getScreenSizeDimensions = (selectedSize) => {
       switch (selectedSize) {
         case "small":
@@ -93,6 +101,7 @@ export default function List() {
                 <Link className='btn btn-primary mb-2 float-end' to={"/product/create"}>
                     Upload Video
                 </Link>
+                 <button onClick={handleRemoveAll}>Remove All Videos</button>
             </div>
             <div className="col-12">
                 <div className="card card-body">
@@ -150,18 +159,20 @@ export default function List() {
                        onDrop={handleDrop}
                        onDragOver={handleDragOver}
                      >
-                       {draggedVideo && (
-                        <div>
-                          <Draggable bounds = "#drop-body">
-                            <video
-                              loop
-                              autoPlay width={draggedVideo.width} 
-                              height={draggedVideo.height} src={draggedVideo.videoSrc} 
-                              type="video/mp4">
-                            </video>
-                          </Draggable>
-                        </div>
-                      )}
+                       {draggedVideos && draggedVideos.length > 0 ? (
+      <>
+        {draggedVideos.map((video, index) => (
+          <div key={index}>
+            <Draggable bounds="#drop-body">
+              <video loop autoPlay width={video.width} height={video.height} src={video.videoSrc} type="video/mp4" />
+            </Draggable>
+          </div>
+        ))}
+       
+      </>
+    ) : (
+      <p>No videos dropped yet.</p>
+    )}
                     </div>
                 </div>
                 </div>
