@@ -57,17 +57,24 @@ export default function List() {
       const videoSrc = event.dataTransfer.getData('text/plain');
       const selectedSize = event.dataTransfer.getData('size');
       const { height, width } = getScreenSizeDimensions(selectedSize);
-    
+  
       setDraggedVideo({ videoSrc, selectedSize, height, width });
+      localStorage.setItem('draggedVideo', JSON.stringify({ videoSrc, selectedSize, height, width }));
     };
-    
 
+    useEffect(() => {
+      const storedVideo = localStorage.getItem('draggedVideo');
+      if (storedVideo) {
+        setDraggedVideo(JSON.parse(storedVideo));
+      }
+    }, []);
+    
     const getScreenSizeDimensions = (selectedSize) => {
       switch (selectedSize) {
         case "small":
           return { height: "100px", width: "200px" };
         case "medium":
-          return { height: "200px", width: "3000px" };
+          return { height: "200px", width: "300px" };
         case "large":
           return { height: "300px", width: "400px" };
         default:
