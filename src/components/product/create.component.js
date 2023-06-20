@@ -11,8 +11,8 @@ export default function CreateProduct() {
   const navigate = useNavigate();
 
   const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
   const [video, setVideo] = useState()
+  const [size, setSize] = useState("");
   const [validationError,setValidationError] = useState({})
 
   const changeVideoHandler = (event) => {
@@ -24,9 +24,9 @@ export default function CreateProduct() {
 
     const formData = new FormData()
 
-    formData.append('title', title)
-    formData.append('description', description)
-    formData.append('video', video)
+    formData.append("title", title);
+    formData.append("video", video);
+    formData.append("size", size);
 
     await axios.post(`http://localhost:8000/api/products`, formData).then(({data})=>{
       Swal.fire({
@@ -46,13 +46,28 @@ export default function CreateProduct() {
     })
   }
 
+  const getScreenSizeDimensions = () => {
+    switch (size) {
+      case "small":
+        return { height: 100, width: 200 };
+      case "medium":
+        return { height: 200, width: 300 };
+      case "large":
+        return { height: 300, width: 400 };
+      default:
+        return { height: 0, width: 0 };
+    }
+  };
+
+  const { height, width } = getScreenSizeDimensions();
+
   return (
     <div className="container">
       <div className="row justify-content-center">
         <div className="col-12 col-sm-12 col-md-6">
           <div className="card">
             <div className="card-body">
-              <h4 className="card-title">Create Product</h4>
+              <h4 className="card-title">Upload Video</h4>
               <hr />
               <div className="form-wrapper">
                 {
@@ -73,33 +88,56 @@ export default function CreateProduct() {
                   )
                 }
                 <Form onSubmit={createProduct}>
-                  <Row> 
-                      <Col>
-                        <Form.Group controlId="Name">
-                            <Form.Label>Title</Form.Label>
-                            <Form.Control type="text" value={title} onChange={(event)=>{
-                              setTitle(event.target.value)
-                            }}/>
-                        </Form.Group>
-                      </Col>  
+                  <Row>
+                    <Col>
+                      <Form.Group controlId="Name">
+                        <Form.Label>Title</Form.Label>
+                        <Form.Control
+                          type="text"
+                          value={title}
+                          onChange={(event) => {
+                            setTitle(event.target.value);
+                          }}
+                        />
+                      </Form.Group>
+                    </Col>
                   </Row>
-                  <Row className="my-3">
-                      <Col>
-                        <Form.Group controlId="Description">
-                            <Form.Label>Description</Form.Label>
-                            <Form.Control as="textarea" rows={3} value={description} onChange={(event)=>{
-                              setDescription(event.target.value)
-                            }}/>
-                        </Form.Group>
-                      </Col>
-                  </Row>
-
                   <Row>
                     <Col>
                       <Form.Group controlId="Video" className="mb-3">
                         <Form.Label>Video</Form.Label>
                         <Form.Control type="file" onChange={changeVideoHandler} />
                       </Form.Group>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <Form.Group controlId="Size" className="mb-3">
+                        <Form.Label>Screen Size</Form.Label>
+                        <Form.Control
+                          as="select"
+                          value={size}
+                          onChange={(event) => {
+                            setSize(event.target.value);
+                          }}
+                        >
+                          <option value="">Select Screen Size</option>
+                          <option value="small">Small</option>
+                          <option value="medium">Medium</option>
+                          <option value="large">Large</option>
+                        </Form.Control>
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <div>
+                        <strong>Screen Size Dimensions:</strong>
+                        <br />
+                        Height: {height}
+                        <br />
+                        Width: {width}
+                      </div>
                     </Col>
                   </Row>
                   <Button variant="primary" className="mt-2" size="lg" block="block" type="submit">

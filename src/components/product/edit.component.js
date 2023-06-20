@@ -12,7 +12,7 @@ export default function EditUser() {
   const { id } = useParams();
 
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [size, setSize] = useState("");
   const [video, setVideo] = useState(null);
   const [validationError, setValidationError] = useState({});
 
@@ -22,9 +22,9 @@ export default function EditUser() {
 
   const fetchProduct = async () => {
     await axios.get(`http://localhost:8000/api/products/${id}`).then(({ data }) => {
-      const { title, description } = data.product;
+      const { title, size} = data.product;
       setTitle(title);
-      setDescription(description);
+      setSize(size);
     }).catch(({ response: { data } }) => {
       Swal.fire({
         text: data.message,
@@ -43,7 +43,7 @@ export default function EditUser() {
     const formData = new FormData();
     formData.append('_method', 'PATCH');
     formData.append('title', title);
-    formData.append('description', description);
+    formData.append('size', size);
     if (video !== null) {
       formData.append('video', video);
     }
@@ -65,6 +65,21 @@ export default function EditUser() {
       }
     });
   };
+
+  const getScreenSizeDimensions = () => {
+    switch (size) {
+      case "small":
+        return { height: 100, width: 200 };
+      case "medium":
+        return { height: 200, width: 300 };
+      case "large":
+        return { height: 300, width: 400 };
+      default:
+        return { height: 0, width: 0 };
+    }
+  };
+
+  const { height, width } = getScreenSizeDimensions();
 
   return (
     <div className="container">
@@ -103,22 +118,42 @@ export default function EditUser() {
                       </Form.Group>
                     </Col>
                   </Row>
-                  <Row className="my-3">
-                    <Col>
-                      <Form.Group controlId="Description">
-                        <Form.Label>Description</Form.Label>
-                        <Form.Control as="textarea" rows={3} value={description} onChange={(event) => {
-                          setDescription(event.target.value);
-                        }} />
-                      </Form.Group>
-                    </Col>
-                  </Row>
                   <Row>
                     <Col>
                       <Form.Group controlId="Video" className="mb-3">
                         <Form.Label>Video</Form.Label>
                         <Form.Control type="file" onChange={changeHandler} />
                       </Form.Group>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <Form.Group controlId="Size" className="mb-3">
+                        <Form.Label>Screen Size</Form.Label>
+                        <Form.Control
+                          as="select"
+                          value={size}
+                          onChange={(event) => {
+                            setSize(event.target.value);
+                          }}
+                        >
+                          <option value="">Select Screen Size</option>
+                          <option value="small">Small</option>
+                          <option value="medium">Medium</option>
+                          <option value="large">Large</option>
+                        </Form.Control>
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <div>
+                        <strong>Screen Size Dimensions:</strong>
+                        <br />
+                        Height: {height}
+                        <br />
+                        Width: {width}
+                      </div>
                     </Col>
                   </Row>
                   <Button variant="primary" className="mt-2" size="lg" block="block" type="submit">
