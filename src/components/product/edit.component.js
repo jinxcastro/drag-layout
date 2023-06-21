@@ -69,11 +69,11 @@ export default function EditUser() {
   const getScreenSizeDimensions = () => {
     switch (size) {
       case "small":
-        return { height: 100, width: 200 };
+        return { height: 200, width: 100 };
       case "medium":
-        return { height: 200, width: 300 };
+        return { height: 300, width: 200 };
       case "large":
-        return { height: 300, width: 400 };
+        return { height: 400, width: 300 };
       default:
         return { height: 0, width: 0 };
     }
@@ -130,18 +130,38 @@ export default function EditUser() {
                     <Col>
                       <Form.Group controlId="Size" className="mb-3">
                         <Form.Label>Screen Size</Form.Label>
-                        <Form.Control
-                          as="select"
-                          value={size}
-                          onChange={(event) => {
-                            setSize(event.target.value);
-                          }}
-                        >
-                          <option value="">Select Screen Size</option>
-                          <option value="small">Small</option>
-                          <option value="medium">Medium</option>
-                          <option value="large">Large</option>
-                        </Form.Control>
+                        <div>
+                          <Form.Check
+                            type="radio"
+                            label="Small"
+                            name="size"
+                            value="small"
+                            checked={size === "small"}
+                            onChange={(event) => {
+                              setSize(event.target.value);
+                            }}
+                          />
+                          <Form.Check
+                            type="radio"
+                            label="Medium"
+                            name="size"
+                            value="medium"
+                            checked={size === "medium"}
+                            onChange={(event) => {
+                              setSize(event.target.value);
+                            }}
+                          />
+                          <Form.Check
+                            type="radio"
+                            label="Large"
+                            name="size"
+                            value="large"
+                            checked={size === "large"}
+                            onChange={(event) => {
+                              setSize(event.target.value);
+                            }}
+                          />
+                        </div>
                       </Form.Group>
                     </Col>
                   </Row>

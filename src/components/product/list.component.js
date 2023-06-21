@@ -51,23 +51,18 @@ export default function List() {
           })
     }
 
-const handleDrop = (event) => {
-  event.preventDefault();
-  const videoSrc = event.dataTransfer.getData('text/plain');
-  const selectedSize = event.dataTransfer.getData('size');
-  const { height, width } = getScreenSizeDimensions(selectedSize);
+  const handleDrop = (event) => {
+    event.preventDefault();
+    const videoSrc = event.dataTransfer.getData('text/plain');
+    const selectedSize = event.dataTransfer.getData('size');
+    const { height, width } = getScreenSizeDimensions(selectedSize);
 
-  const existingVideos = JSON.parse(localStorage.getItem('draggedVideos')) || [];
-  const newVideo = { videoSrc, selectedSize, height, width };
-  const updatedVideos = [...existingVideos, newVideo];
+    const existingVideos = JSON.parse(localStorage.getItem('draggedVideos')) || [];
+    const newVideo = { videoSrc, selectedSize, height, width };
+    const updatedVideos = [...existingVideos, newVideo];
 
-  setDraggedVideos(updatedVideos);
-  localStorage.setItem('draggedVideos', JSON.stringify(updatedVideos));
-  };
-
-  const handleRemoveAll = () => {
-    setDraggedVideos([]);
-    localStorage.removeItem('draggedVideos');
+    setDraggedVideos(updatedVideos);
+    localStorage.setItem('draggedVideos', JSON.stringify(updatedVideos));
   };
 
   useEffect(() => {
@@ -77,16 +72,21 @@ const handleDrop = (event) => {
     }
   }, []);
 
+  const handleRemoveAll = () => {
+    setDraggedVideos([]);
+    localStorage.removeItem('draggedVideos');
+  };
+
     const getScreenSizeDimensions = (selectedSize) => {
       switch (selectedSize) {
         case "small":
-          return { height: "100px", width: "200px" };
+          return { height: "200px", width: "100px" };
         case "medium":
-          return { height: "200px", width: "300px" };
+          return { height: "300px", width: "200px" };
         case "large":
-          return { height: "300px", width: "400px" };
+          return { height: "400px", width: "300px" };
         default:
-          return { height: "75px", width: "auto" };
+          return { height: "0px", width: "0px" };
       }
     };
       
@@ -98,23 +98,28 @@ const handleDrop = (event) => {
       <div className="container">
           <div className="row">
             <div className='col-12'>
-                <Link className='btn btn-primary mb-2 float-end' to={"/product/create"}>
+                <Link 
+                    className='btn btn-primary mb-2 float-end' 
+                    to={"/product/create"}>
                     Upload Video
                 </Link>
-                 <button onClick={handleRemoveAll}>Remove All Videos</button>
+                <Button 
+                    variant = 'danger' 
+                    onClick={handleRemoveAll}>Remove All Videos
+                </Button>
             </div>
             <div className="col-12">
-                <div className="card card-body">
-                <div className="table-responsive">
-                <table className="table table-bordered mb-0 text-center">
-                    <thead>
-                    <tr>
-                        <th>Actions</th>
-                        <th>size</th>
-                        <th>video</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+              <div className="card card-body">
+              <div className="table-responsive">
+              <table className="table table-bordered mb-0 text-center">
+                <thead>
+                  <tr>
+                    <th>Actions</th>
+                    <th>size</th>
+                    <th>video</th>
+                  </tr>
+                </thead>
+                <tbody>
                   {products.length > 0 &&
                     products.map((row, key) => (
                       <tr key={key}>
@@ -127,7 +132,8 @@ const handleDrop = (event) => {
                             width="75px"
                             draggable
                             onDragStart={(event) => {
-                              event.dataTransfer.setData('text/plain', `http://localhost:8000/storage/product/video/${row.video}`);
+                              event.dataTransfer.setData('text/plain', 
+                              `http://localhost:8000/storage/product/video/${row.video}`);
                               event.dataTransfer.setData('size', row.size);
                             }}
                           >
@@ -160,19 +166,29 @@ const handleDrop = (event) => {
                        onDragOver={handleDragOver}
                      >
                        {draggedVideos && draggedVideos.length > 0 ? (
-      <>
-        {draggedVideos.map((video, index) => (
-          <div key={index}>
-            <Draggable bounds="#drop-body">
-              <video loop autoPlay width={video.width} height={video.height} src={video.videoSrc} type="video/mp4" />
-            </Draggable>
-          </div>
-        ))}
-       
-      </>
-    ) : (
-      <p>No videos dropped yet.</p>
-    )}
+                      <>
+                        {draggedVideos.map((video, index) => (
+                          <div key={index}>
+                            <Draggable bounds="#drop-body">
+                            <div style={{ width: video.width, height: video.height }}>
+                              <video 
+                                loop autoPlay  
+                                src={video.videoSrc} 
+                                type="video/mp4"
+                                style={{ 
+                                  objectFit: 'fill', 
+                                  width: '100%', 
+                                  height: '100%', 
+                                }}
+                              />
+                              </div>
+                            </Draggable>
+                          </div>
+                        ))}                     
+                      </>
+                    ) : (
+                      <p>No videos dropped yet.</p>
+                    )}
                     </div>
                 </div>
                 </div>
