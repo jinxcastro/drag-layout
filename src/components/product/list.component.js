@@ -9,6 +9,12 @@ export default function List() {
 
     const [products, setProducts] = useState([])
     const [draggedVideos, setDraggedVideos] = useState(null);
+    const [zoomLevel, setZoomLevel] = useState(100);
+
+    const handleZoomChange = (event) => {
+      const newZoomLevel = parseInt(event.target.value);
+      setZoomLevel(newZoomLevel);
+    };
 
     useEffect(()=>{
         fetchProducts() 
@@ -159,17 +165,18 @@ export default function List() {
                 </table>
                 <div style={{ padding: '10px' }}>
                 <div style={{ width: '100%' }}>
-                    <div
-                       className="drop-body"
-                       id="drop-body"
-                       onDrop={handleDrop}
-                       onDragOver={handleDragOver}
-                     >
-                       {draggedVideos && draggedVideos.length > 0 ? (
-                      <>
-                        {draggedVideos.map((video, index) => (
-                          <div key={index}>
-                            <Draggable bounds="#drop-body">
+                  <div
+                    className="drop-body"
+                    id="drop-body"
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
+                    style={{ zoom: `${zoomLevel}%` }}
+                  >
+                   {draggedVideos && draggedVideos.length > 0 ? (
+                    <>
+                      {draggedVideos.map((video, index) => (
+                        <div key={index}>
+                          <Draggable bounds="#drop-body">
                             <div style={{ width: video.width, height: video.height }}>
                               <video 
                                 loop autoPlay  
@@ -182,13 +189,22 @@ export default function List() {
                                 }}
                               />
                               </div>
-                            </Draggable>
-                          </div>
-                        ))}                     
-                      </>
+                          </Draggable>
+                        </div>
+                      ))}                     
+                    </>
                     ) : (
                       <p>No videos dropped yet.</p>
                     )}
+                    </div>
+                    <div>
+                      <input
+                        type="range"
+                        min="50"
+                        max="200"
+                        value={zoomLevel}
+                        onChange={handleZoomChange}
+                      />
                     </div>
                 </div>
                 </div>
