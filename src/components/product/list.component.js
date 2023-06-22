@@ -183,6 +183,8 @@ export default function List() {
                               event.dataTransfer.setData('text/plain', 
                               `http://localhost:8000/storage/product/video/${row.video}`);
                               event.dataTransfer.setData('size', row.size);
+                              event.dataTransfer.setData('vidwidth', row.vidwidth);
+                              event.dataTransfer.setData('vidheight', row.vidheight);
                             }}
                           >
                             <source
