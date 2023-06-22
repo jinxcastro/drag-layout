@@ -11,9 +11,11 @@ export default function CreateProduct() {
   const navigate = useNavigate();
 
   const [title, setTitle] = useState("")
-  const [video, setVideo] = useState()
+  const [video, setVideo] = useState();
   const [size, setSize] = useState("");
-  const [validationError,setValidationError] = useState({})
+  const [vidwidth, setVidWidth] = useState ("");
+  const [vidheight, setVidHeight] = useState ("");
+  const [validationError,setValidationError] = useState({});
 
   const changeVideoHandler = (event) => {
     setVideo(event.target.files[0]);
@@ -27,6 +29,8 @@ export default function CreateProduct() {
     formData.append("title", title);
     formData.append("video", video);
     formData.append("size", size);
+    formData.append("vidwidth", vidwidth);
+    formData.append("vidheight", vidheight);
 
     await axios.post(`http://localhost:8000/api/products`, formData).then(({data})=>{
       Swal.fire({
@@ -110,54 +114,79 @@ export default function CreateProduct() {
                       </Form.Group>
                     </Col>
                   </Row>
-<Row>
-  <Col>
-    <Form.Group controlId="Size" className="mb-3">
-      <Form.Label>Screen Size</Form.Label>
-      <div>
-        <Form.Check
-          type="radio"
-          label="Small"
-          name="size"
-          value="small"
-          checked={size === "small"}
-          onChange={(event) => {
-            setSize(event.target.value);
-          }}
-        />
-        <Form.Check
-          type="radio"
-          label="Medium"
-          name="size"
-          value="medium"
-          checked={size === "medium"}
-          onChange={(event) => {
-            setSize(event.target.value);
-          }}
-        />
-        <Form.Check
-          type="radio"
-          label="Large"
-          name="size"
-          value="large"
-          checked={size === "large"}
-          onChange={(event) => {
-            setSize(event.target.value);
-          }}
-        />
-      </div>
-    </Form.Group>
-  </Col>
-</Row>
-
+                  <Row>
+                    <Col>
+                      <Form.Group controlId="VidWidth" >
+                        <Form.Label>Video Width</Form.Label>
+                        <Form.Control
+                          type="number"
+                          value={vidwidth}
+                          onChange={(event) => {
+                            setVidWidth(event.target.value);
+                          }}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col>
+                      <Form.Group controlId="VidHeight" >
+                        <Form.Label>Video Height</Form.Label>
+                        <Form.Control
+                          type="number"
+                          value={vidheight}
+                          onChange={(event) => {
+                            setVidHeight(event.target.value);
+                          }}
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <Form.Group controlId="Size" className="mb-3">
+                        <Form.Label>Screen Size</Form.Label>
+                        <div>
+                          <Form.Check
+                            type="radio"
+                            label="Small"
+                            name="size"
+                            value="small"
+                            checked={size === "small"}
+                            onChange={(event) => {
+                              setSize(event.target.value);
+                            }}
+                          />
+                          <Form.Check
+                            type="radio"
+                            label="Medium"
+                            name="size"
+                            value="medium"
+                            checked={size === "medium"}
+                            onChange={(event) => {
+                              setSize(event.target.value);
+                            }}
+                          />
+                          <Form.Check
+                            type="radio"
+                            label="Large"
+                            name="size"
+                            value="large"
+                            checked={size === "large"}
+                            onChange={(event) => {
+                              setSize(event.target.value);
+                            }}
+                          />
+                        </div>
+                      </Form.Group>
+                    </Col>
+                  </Row>
                   <Row>
                     <Col>
                       <div>
                         <strong>Screen Size Dimensions:</strong>
                         <br />
-                        Height: {height}
+                        Height: {height} {vidheight && `(${vidheight}px)`}
                         <br />
-                        Width: {width}
+                        Width: {width} {vidwidth && `(${vidwidth}px)`}
                       </div>
                     </Col>
                   </Row>

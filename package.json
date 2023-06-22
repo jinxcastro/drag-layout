@@ -30,6 +30,8 @@
     "react-rnd": "^10.4.1",
     "react-router-dom": "^6.10.0",
     "react-scripts": "5.0.1",
+    "react-slick": "^0.29.0",
+    "react-sortable-hoc": "^2.0.0",
     "sweetalert2": "^11.7.3",
     "universal-cookie": "^4.0.4",
     "uuid": "^9.0.0",

@@ -13,6 +13,8 @@ export default function EditUser() {
 
   const [title, setTitle] = useState("");
   const [size, setSize] = useState("");
+  const [vidwidth, setVidWidth] = useState ("");
+  const [vidheight, setVidHeight] = useState ("");
   const [video, setVideo] = useState(null);
   const [validationError, setValidationError] = useState({});
 
@@ -22,9 +24,11 @@ export default function EditUser() {
 
   const fetchProduct = async () => {
     await axios.get(`http://localhost:8000/api/products/${id}`).then(({ data }) => {
-      const { title, size} = data.product;
+      const { title, size, vidheight, vidwidth} = data.product;
       setTitle(title);
       setSize(size);
+      setVidHeight(vidheight);
+      setVidWidth(vidwidth);
     }).catch(({ response: { data } }) => {
       Swal.fire({
         text: data.message,
@@ -44,6 +48,8 @@ export default function EditUser() {
     formData.append('_method', 'PATCH');
     formData.append('title', title);
     formData.append('size', size);
+    formData.append('vidheight', vidheight);
+    formData.append('vidwidth', vidwidth);
     if (video !== null) {
       formData.append('video', video);
     }
@@ -128,6 +134,32 @@ export default function EditUser() {
                   </Row>
                   <Row>
                     <Col>
+                      <Form.Group controlId="VidWidth" >
+                        <Form.Label>Video Width</Form.Label>
+                        <Form.Control
+                          type="number"
+                          value={vidwidth}
+                          onChange={(event) => {
+                            setVidWidth(event.target.value);
+                          }}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col>
+                      <Form.Group controlId="VidHeight" >
+                        <Form.Label>Video Height</Form.Label>
+                        <Form.Control
+                          type="number"
+                          value={vidheight}
+                          onChange={(event) => {
+                            setVidHeight(event.target.value);
+                          }}
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
                       <Form.Group controlId="Size" className="mb-3">
                         <Form.Label>Screen Size</Form.Label>
                         <div>
@@ -170,9 +202,9 @@ export default function EditUser() {
                       <div>
                         <strong>Screen Size Dimensions:</strong>
                         <br />
-                        Height: {height}
+                        Height: {height} {vidheight && `(${vidheight}px)`}
                         <br />
-                        Width: {width}
+                        Width: {width} {vidwidth && `(${vidwidth}px)`}
                       </div>
                     </Col>
                   </Row>

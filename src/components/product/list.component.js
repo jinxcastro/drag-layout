@@ -7,9 +7,44 @@ import Draggable from 'react-draggable';
 
 export default function List() {
 
-    const [products, setProducts] = useState([])
-    const [draggedVideos, setDraggedVideos] = useState(null);
-    const [zoomLevel, setZoomLevel] = useState(100);
+  const [products, setProducts] = useState([])
+  const [draggedVideos, setDraggedVideos] = useState(null);
+  const [zoomLevel, setZoomLevel] = useState(100);
+  const [selectedVideoIndex, setSelectedVideoIndex] = useState(-1);
+
+  const handleVideoClick = (index) => {
+    setSelectedVideoIndex(index);
+  };
+
+  const handlePanelClose = () => {
+    setSelectedVideoIndex(-1);
+  };
+  
+  const handleSendToBack = () => {
+    if (selectedVideoIndex > 0) {
+      const updatedVideos = [...draggedVideos];
+      const selectedVideo = updatedVideos[selectedVideoIndex];
+      updatedVideos.splice(selectedVideoIndex, 1);
+      updatedVideos.unshift(selectedVideo);
+      setDraggedVideos(updatedVideos);
+      setSelectedVideoIndex(0);
+      localStorage.setItem('draggedVideos', JSON.stringify(updatedVideos));
+      localStorage.setItem('selectedVideoIndex', '0');
+    }
+  };
+
+  const handleSendToFront = () => {
+    if (selectedVideoIndex < draggedVideos.length - 1) {
+      const updatedVideos = [...draggedVideos];
+      const selectedVideo = updatedVideos[selectedVideoIndex];
+      updatedVideos.splice(selectedVideoIndex, 1);
+      updatedVideos.push(selectedVideo);
+      setDraggedVideos(updatedVideos);
+      setSelectedVideoIndex(updatedVideos.length - 1);
+      localStorage.setItem('draggedVideos', JSON.stringify(updatedVideos));
+      localStorage.setItem('selectedVideoIndex', (updatedVideos.length - 1).toString());
+    }
+  };
 
     const handleZoomChange = (event) => {
       const newZoomLevel = parseInt(event.target.value);
@@ -73,8 +108,10 @@ export default function List() {
 
   useEffect(() => {
     const storedVideos = localStorage.getItem('draggedVideos');
-    if (storedVideos) {
+    const storedIndex = localStorage.getItem('selectedVideoIndex');
+    if (storedVideos && storedIndex) {
       setDraggedVideos(JSON.parse(storedVideos));
+      setSelectedVideoIndex(parseInt(storedIndex));
     }
   }, []);
 
@@ -83,7 +120,7 @@ export default function List() {
     localStorage.removeItem('draggedVideos');
   };
 
-    const getScreenSizeDimensions = (selectedSize) => {
+  const getScreenSizeDimensions = (selectedSize) => {
       switch (selectedSize) {
         case "small":
           return { height: "200px", width: "100px" };
@@ -96,7 +133,7 @@ export default function List() {
       }
     };
       
-      function handleDragOver(event) {
+  const handleDragOver = (event) => {
         event.preventDefault();
       }
 
@@ -115,14 +152,19 @@ export default function List() {
                 </Button>
             </div>
             <div className="col-12">
-              <div className="card card-body">
+            <div className={`${selectedVideoIndex ? 'card card-body' : '' }`}
+              style={{
+                transition: 'margin-right 0.3s ease',
+                marginRight: selectedVideoIndex !== -1 ? '250px' : '0', }}
+            >
               <div className="table-responsive">
               <table className="table table-bordered mb-0 text-center">
                 <thead>
                   <tr>
-                    <th>Actions</th>
+                    <th>Name</th>
                     <th>size</th>
                     <th>video</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -150,14 +192,14 @@ export default function List() {
                           </video>
                         </td>
                         <td>
-                          <Link to={`/product/edit/${row.id}`} 
-                            className="btn btn-success me-2">
-                            Edit
-                          </Link>
-                          <Button variant="danger" onClick={() =>
-                            deleteProduct(row.id)}>
-                            Delete
-                          </Button>
+                        <Link to={`/product/edit/${row.id}`} 
+                        className="btn btn-success me-2">
+                          Edit
+                      </Link>
+                      <Button variant="danger" onClick={() =>
+                        deleteProduct(row.id)}>
+                          Delete
+                      </Button>     
                         </td>
                       </tr>
                     ))}
@@ -177,7 +219,13 @@ export default function List() {
                       {draggedVideos.map((video, index) => (
                         <div key={index}>
                           <Draggable bounds="#drop-body">
-                            <div style={{ width: video.width, height: video.height }}>
+                            <div 
+                              style={{ 
+                                width: video.width, 
+                                height: video.height 
+                              }}
+                              onClick={() => handleVideoClick(index)} 
+                            >
                               <video 
                                 loop autoPlay  
                                 src={video.videoSrc} 
@@ -208,9 +256,21 @@ export default function List() {
                     </div>
                 </div>
                 </div>
-                </div>
-                </div>
+              </div>
             </div>
+            </div>
+            {selectedVideoIndex !== -1 && (
+              <div className="panel-style">
+                <button className="close-button float-end" onClick={handlePanelClose}>
+                  Close
+                </button>
+                <h2>Edit Video</h2>
+                <div>
+                  <button onClick={handleSendToBack}>Send to Back</button>
+                  <button onClick={handleSendToFront}>Send to Front</button>
+                </div>
+              </div>
+            )}
           </div>
       </div>
     )
