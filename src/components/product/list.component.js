@@ -36,14 +36,21 @@ export default function List() {
 
   const handleVideoClick = (index) => {
     setSelectedVideoIndex(index);
+    const selectedVideo = draggedVideos[index];
+    if (selectedVideo) {
+      setX(Math.round(selectedVideo.offset.left));
+      setY(Math.round(selectedVideo.offset.top));
+      localStorage.setItem('x', Math.round(selectedVideo.offset.left).toString());
+      localStorage.setItem('y', Math.round(selectedVideo.offset.top).toString());
+    }
   };
 
   const handlePanelClose = () => {
     setSelectedVideoIndex(-1);
     setNewWidth("");
     setNewHeight("");
-    setX("")
-    setY("")
+    // setX("")
+    // setY("")
   };
   
   const handleSendToBack = () => {
@@ -361,6 +368,9 @@ export default function List() {
           <h4>Change Position</h4>
           <input type="number" id="x" value={x} onChange={(e) => setX(Math.round(parseInt(e.target.value)))} />
           <input type="number" id="y" value={y} onChange={(e) => setY(Math.round(parseInt(e.target.value)))} />
+          <p>Selected Video:</p>
+          <p>x: {x}</p>
+          <p>y: {y}</p>
           <button className= 'BF-btn'onClick={handleReposition}>Reposition</button>
         </div>
         <div className='size-container'>
