@@ -13,8 +13,6 @@ export default function CreateProduct() {
   const [title, setTitle] = useState("")
   const [video, setVideo] = useState();
   const [size, setSize] = useState("");
-  const [vidwidth, setVidWidth] = useState ("");
-  const [vidheight, setVidHeight] = useState ("");
   const [validationError,setValidationError] = useState({});
 
   const changeVideoHandler = (event) => {
@@ -29,8 +27,6 @@ export default function CreateProduct() {
     formData.append("title", title);
     formData.append("video", video);
     formData.append("size", size);
-    formData.append("vidwidth", vidwidth);
-    formData.append("vidheight", vidheight);
 
     await axios.post(`http://localhost:8000/api/products`, formData).then(({data})=>{
       Swal.fire({
@@ -116,32 +112,6 @@ export default function CreateProduct() {
                   </Row>
                   <Row>
                     <Col>
-                      <Form.Group controlId="VidWidth" >
-                        <Form.Label>Video Width</Form.Label>
-                        <Form.Control
-                          type="number"
-                          value={vidwidth}
-                          onChange={(event) => {
-                            setVidWidth(event.target.value);
-                          }}
-                        />
-                      </Form.Group>
-                    </Col>
-                    <Col>
-                      <Form.Group controlId="VidHeight" >
-                        <Form.Label>Video Height</Form.Label>
-                        <Form.Control
-                          type="number"
-                          value={vidheight}
-                          onChange={(event) => {
-                            setVidHeight(event.target.value);
-                          }}
-                        />
-                      </Form.Group>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col>
                       <Form.Group controlId="Size" className="mb-3">
                         <Form.Label>Screen Size</Form.Label>
                         <div>
@@ -184,9 +154,9 @@ export default function CreateProduct() {
                       <div>
                         <strong>Screen Size Dimensions:</strong>
                         <br />
-                        Height: {height} {vidheight && `(${vidheight}px)`}
+                        Height: {height}
                         <br />
-                        Width: {width} {vidwidth && `(${vidwidth}px)`}
+                        Width: {width}
                       </div>
                     </Col>
                   </Row>
