@@ -49,8 +49,6 @@ export default function List() {
     setSelectedVideoIndex(-1);
     setNewWidth("");
     setNewHeight("");
-    // setX("")
-    // setY("")
   };
   
   const handleSendToBack = () => {
