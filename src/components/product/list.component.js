@@ -5,6 +5,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2'
 import Draggable from 'react-draggable';
 import './component.css';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
 export default function List() {
 
@@ -211,10 +212,20 @@ export default function List() {
         default:
           return { height: "0px", width: "0px" };
       }
-    };
+  };
       
   const handleDragOver = (event) => {
         event.preventDefault();
+  };
+
+  const handleSwap = (event, targetIndex) => {
+    event.preventDefault();
+    const productId = event.dataTransfer.getData('text/plain');
+    const updatedProducts = [...products];
+    const draggedProductIndex = updatedProducts.findIndex((product) => product.id === productId);
+    const draggedProduct = updatedProducts.splice(draggedProductIndex, 1)[0];
+    updatedProducts.splice(targetIndex, 0, draggedProduct);
+    setProducts(updatedProducts);
   };
 
     return (
@@ -238,30 +249,29 @@ export default function List() {
                 marginRight: selectedVideoIndex !== -1 ? '250px' : '0', }}
             >
               <div className="table-responsive">
-              <table className="table table-bordered mb-0 text-center">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>size</th>
-                    <th>video</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
+              <div className="d-flex flex-wrap">
                   {products.length > 0 &&
-                    products.map((row, key) => (
-                      <tr key={key}>
-                        <td>{row.title}</td>
-                        <td>{row.size}</td>
-                        <td>
-                        <video
+                    products.map((row, index) => (
+                        <div
+                          key={row.id}
+                          className="card m-2"
+                          draggable
+                          onDragOver={handleDragOver}
+                          onDrop={(event) => handleSwap(event, index)}
+                        >
+                        <div className="card-body">
+                          <h5 className="card-title">{row.title}</h5>
+                          <p className="card-text">Size: {row.size}</p>
+                          <video
                             loop
                             autoPlay
                             width="75px"
                             draggable
                             onDragStart={(event) => {
-                              event.dataTransfer.setData('text/plain', 
-                              `http://localhost:8000/storage/product/video/${row.video}`);
+                              event.dataTransfer.setData(
+                                'text/plain',
+                                `http://localhost:8000/storage/product/video/${row.video}`
+                              );
                               event.dataTransfer.setData('size', row.size);
                             }}
                             onClick={(event) => {
@@ -275,21 +285,18 @@ export default function List() {
                               type="video/mp4"
                             />
                           </video>
-                        </td>
-                        <td>
-                        <Link to={`/product/edit/${row.id}`} 
-                        className="btn btn-success me-2">
-                          Edit
-                      </Link>
-                      <Button variant="danger" onClick={() =>
-                        deleteProduct(row.id)}>
-                          Delete
-                      </Button>     
-                        </td>
-                      </tr>
+                          <div className="d-flex justify-content-between mt-2">
+                            <Link to={`/product/edit/${row.id}`} className="btn btn-success me-2">
+                              Edit
+                            </Link>
+                            <Button variant="danger" onClick={() => deleteProduct(row.id)}>
+                              Delete
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
                     ))}
-                </tbody>
-                </table>
+                </div>
                 <div style={{ padding: '10px' }}>
                 <div style={{ width: '100%' }}>
                   <div
