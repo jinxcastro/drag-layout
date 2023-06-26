@@ -5,7 +5,6 @@ import axios from 'axios';
 import Swal from 'sweetalert2'
 import Draggable from 'react-draggable';
 import './component.css';
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
 export default function List() {
 
@@ -79,8 +78,9 @@ export default function List() {
   };
 
   const handleZoomChange = (event) => {
-      const newZoomLevel = parseInt(event.target.value);
-      setZoomLevel(newZoomLevel);
+    const newZoomLevel = parseInt(event.target.value);
+    setZoomLevel(newZoomLevel);
+    localStorage.setItem('zoomLevel', newZoomLevel);
   };
 
   useEffect(()=>{
@@ -181,18 +181,22 @@ export default function List() {
   useEffect(() => {
     const storedX = localStorage.getItem('x');
     const storedY = localStorage.getItem('y');
-      if (storedX && storedY) {
-        setX(parseInt(storedX));
-        setY(parseInt(storedY));
-    }
-  }, []);
-
-  useEffect(() => {
     const storedVideos = localStorage.getItem('draggedVideos');
     const storedIndex = localStorage.getItem('selectedVideoIndex');
+    const storedZoomLevel = localStorage.getItem('zoomLevel');
+
+    if (storedX && storedY) {
+      setX(parseInt(storedX));
+      setY(parseInt(storedY));
+    }
+
     if (storedVideos && storedIndex) {
       setDraggedVideos(JSON.parse(storedVideos));
       setSelectedVideoIndex(parseInt(storedIndex));
+    }
+
+    if (storedZoomLevel) {
+      setZoomLevel(parseInt(storedZoomLevel));
     }
   }, []);
 
