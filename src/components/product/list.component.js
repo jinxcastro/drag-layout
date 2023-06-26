@@ -230,6 +230,29 @@ export default function List() {
     const draggedProduct = updatedProducts.splice(draggedProductIndex, 1)[0];
     updatedProducts.splice(targetIndex, 0, draggedProduct);
     setProducts(updatedProducts);
+
+    localStorage.setItem('products', JSON.stringify(updatedProducts));
+  };
+
+  const handleFlip = () => {
+    const updatedVideos = [...draggedVideos];
+    const video = updatedVideos[selectedVideoIndex];
+    if (video) {
+      video.rotation = (video.rotation || 0) + 180;
+      setDraggedVideos(updatedVideos);
+      localStorage.setItem('draggedVideos', JSON.stringify(updatedVideos));
+    }
+  };
+
+  const handleMirror = () => {
+    const updatedVideos = [...draggedVideos];
+    const video = updatedVideos[selectedVideoIndex];
+    if (video) {
+      // Mirror the video
+      video.mirrored = !video.mirrored;
+      setDraggedVideos(updatedVideos);
+      localStorage.setItem('draggedVideos', JSON.stringify(updatedVideos));
+    }
   };
 
     return (
@@ -333,7 +356,8 @@ export default function List() {
                                   objectFit: 'fill', 
                                   width: '100%', 
                                   height: '100%', 
-                                }}
+                                  transform: `rotate(${video.rotation || 0}deg) 
+                                  ${video.mirrored ? 'scaleX(-1)' : ''}`,}}
                               />
                               </div>
                           </Draggable>
@@ -386,6 +410,11 @@ export default function List() {
           <h4>Send to Back & Front</h4>
           <button className= 'BF-btn' onClick={handleSendToBack}>Send to Back</button>
           <button onClick={handleSendToFront}>Send to Front</button>
+        </div>
+        <div className='size-container'>
+          <h4>Transform Video</h4>
+          <button className='BF-btn' onClick={handleFlip}>Flip 180°</button>
+          <button className='BF-btn' onClick={handleMirror}>Mirror</button>
         </div>
       </div>
       </div>
