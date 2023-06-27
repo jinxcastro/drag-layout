@@ -5,6 +5,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2'
 import Draggable from 'react-draggable';
 import './component.css';
+import { motion } from "framer-motion";
 
 export default function List() {
 
@@ -14,6 +15,8 @@ export default function List() {
   const [selectedVideoIndex, setSelectedVideoIndex] = useState(-1);
   const [newWidth, setNewWidth] = useState('');
   const [newHeight, setNewHeight] = useState('');
+  const [sliderWidth, setSliderWidth] = useState(0);
+  const [sliderHeight, setSliderHeight] = useState(0);
   const [x, setX] = useState(0);
   const [y, setY] = useState(0);
 
@@ -32,6 +35,31 @@ export default function List() {
     selectedVideo.height = parseInt(newHeight);
     setDraggedVideos(videos);
     localStorage.setItem('draggedVideos', JSON.stringify(videos));
+  };
+
+  const handleSliderWidthChange = (event) => {
+    const width = parseInt(event.target.value);
+    setSliderWidth(width);
+    setNewWidth(width.toString());
+    updateSelectedVideoSize(width, parseInt(newHeight));
+  };
+
+  const handleSliderHeightChange = (event) => {
+    const height = parseInt(event.target.value);
+    setSliderHeight(height);
+    setNewHeight(height.toString());
+    updateSelectedVideoSize(parseInt(newWidth), height);
+  };
+
+  const updateSelectedVideoSize = (width, height) => {
+    if (selectedVideoIndex !== -1) {
+      const videos = [...draggedVideos];
+      const selectedVideo = videos[selectedVideoIndex];
+      selectedVideo.width = width;
+      selectedVideo.height = height;
+      setDraggedVideos(videos);
+      localStorage.setItem('draggedVideos', JSON.stringify(videos));
+    }
   };
 
   const handleVideoClick = (index) => {
@@ -200,6 +228,15 @@ export default function List() {
     }
   }, []);
 
+  useEffect(() => {
+    if (selectedVideoIndex !== -1) {
+      setNewWidth(draggedVideos[selectedVideoIndex]?.width.toString());
+      setNewHeight(draggedVideos[selectedVideoIndex]?.height.toString());
+      setSliderWidth(draggedVideos[selectedVideoIndex]?.width || 0);
+      setSliderHeight(draggedVideos[selectedVideoIndex]?.height || 0);
+    }
+  }, [selectedVideoIndex, draggedVideos]);
+
   const handleRemoveAll = () => {
     setDraggedVideos([]);
     localStorage.removeItem('draggedVideos');
@@ -279,12 +316,15 @@ export default function List() {
               <div className="d-flex flex-wrap">
                   {products.length > 0 &&
                     products.map((row, index) => (
-                        <div
+                        <motion.div
                           key={row.id}
                           className="card m-2"
                           draggable
                           onDragOver={handleDragOver}
                           onDrop={(event) => handleSwap(event, index)}
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          layout
                         >
                         <div className="card-body">
                           <h5 className="card-title">{row.title}</h5>
@@ -321,7 +361,7 @@ export default function List() {
                             </Button>
                           </div>
                         </div>
-                      </div>
+                      </motion.div>
                     ))}
                 </div>
                 <div style={{ padding: '10px' }}>
@@ -392,8 +432,14 @@ export default function List() {
       <div>    
         <div className='size-container'>
           <h4>Change Size</h4>
-          <input type="text" value={newWidth} onChange={handleWidthChange} placeholder="New Width" />
-          <input type="text" value={newHeight} onChange={handleHeightChange} placeholder="New Height" />
+          {/* put the value={newHeight&width} inside the input field if necessary */}
+          <input type="text" onChange={handleWidthChange} placeholder="New Width" />
+          <input type="text" onChange={handleHeightChange} placeholder="New Height" />
+
+          <input type="range" min="0" max="300" value={sliderWidth} onChange={handleSliderWidthChange} />
+          <input type="range" min="0" max="400" value={sliderHeight} onChange={handleSliderHeightChange} />
+          <p>Width: {newWidth}</p>
+          <p>Height: {newHeight}</p>
           <button className= 'BF-btn' onClick={handleApplyChanges}>Apply Changes</button>
         </div> 
 
