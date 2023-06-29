@@ -261,18 +261,12 @@ export default function List() {
 
   const handleSwap = (event, targetIndex) => {
     event.preventDefault();
-    const sourceIndex = parseInt(event.dataTransfer.getData('text/plain'));
+    const productId = event.dataTransfer.getData('text/plain');
     const updatedProducts = [...products];
-    const draggedProduct = updatedProducts[sourceIndex];
-    updatedProducts.splice(sourceIndex, 1);
+    const draggedProductIndex = updatedProducts.findIndex((product) => product.id === productId);
+    const draggedProduct = updatedProducts.splice(draggedProductIndex, 1)[0];
     updatedProducts.splice(targetIndex, 0, draggedProduct);
     setProducts(updatedProducts);
-
-    localStorage.setItem('products', JSON.stringify(updatedProducts));
-  };
-
-  const handleDragStart = (event, index) => {
-    event.dataTransfer.setData('text/plain', index.toString());
   };
 
   const handleFlip = () => {
@@ -325,7 +319,6 @@ export default function List() {
                           className="card m-2"
                           draggable
                           onDragOver={handleDragOver}
-                          onDragStart={(event) => handleDragStart(event, index)}
                           onDrop={(event) => handleSwap(event, index)}
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
