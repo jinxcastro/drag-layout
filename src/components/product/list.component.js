@@ -242,6 +242,13 @@ export default function List() {
     localStorage.removeItem('draggedVideos');
   };
 
+  const handleRemoveSelected = (indexToRemove) => {
+    const updatedVideos = [...draggedVideos];
+    updatedVideos.splice(indexToRemove, 1);
+    setDraggedVideos(updatedVideos);
+    localStorage.setItem('draggedVideos', JSON.stringify(updatedVideos));
+  };
+
   const getScreenSizeDimensions = (selectedSize) => {
       switch (selectedSize) {
         case "small":
@@ -460,6 +467,12 @@ export default function List() {
           <button className='BF-btn' onClick={handleFlip}>Flip 180°</button>
           <button className='BF-btn' onClick={handleMirror}>Mirror</button>
         </div>
+        <div className='size-container'>
+        <h4>Remove Video</h4>
+        <button className='BF-btn' onClick={() => handleRemoveSelected(selectedVideoIndex)}>
+          Remove Selected Video
+        </button>
+      </div>
       </div>
       </div>
     )}

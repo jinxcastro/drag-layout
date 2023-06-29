@@ -5,6 +5,7 @@
     height: 100%;
     width: 300px;
     background: lightgray;
+    overflow: auto; 
   }
 
   .size-container {
@@ -20,6 +21,7 @@
     margin-right: 10px;
     margin-top: 10px;
   }
+
   
   
   
