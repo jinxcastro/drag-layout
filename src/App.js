@@ -12,9 +12,7 @@ function App() {
   return (<Router>
     <Navbar bg="primary">
       <Container>
-        <Link to={"/"} className="navbar-brand text-white">
-          Basic Crud App
-        </Link>
+        <h1 className="navbar-brand text-white">Github Page</h1>
       </Container>
     </Navbar>
 
