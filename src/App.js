@@ -12,7 +12,7 @@ function App() {
   return (<Router>
     <Navbar bg="primary">
       <Container>
-        <Link to={"/dragLayout"} className="navbar-brand text-white">
+        <Link to={"/"} className="navbar-brand text-white">
           Basic Crud App
         </Link>
       </Container>
