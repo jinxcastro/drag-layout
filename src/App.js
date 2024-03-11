@@ -23,6 +23,7 @@ function App() {
         <Col md={12}>
           <Routes>
             <Route exact path='/' element={<DragLayout />} />
+            <Route path="/drag-layout" element={<DragLayout />} />
           </Routes>
         </Col>
       </Row>
